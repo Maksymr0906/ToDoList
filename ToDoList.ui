@@ -1,28 +1,171 @@
-<UI version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>ToDoListClass</class>
- <widget class="QMainWindow" name="ToDoListClass" >
-  <property name="objectName" >
-   <string notr="true">ToDoListClass</string>
-  </property>
-  <property name="geometry" >
+ <widget class="QMainWindow" name="ToDoListClass">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>599</width>
     <height>400</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>ToDoList</string>
-  </property>  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  </property>
+  <property name="windowIcon">
+   <iconset resource="ToDoList.qrc">
+    <normaloff>:/ToDoList/Assets/program_icon.png</normaloff>:/ToDoList/Assets/program_icon.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>599</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuTask">
+    <property name="title">
+     <string>Task</string>
+    </property>
+    <addaction name="actionAdd"/>
+    <addaction name="actionEdit"/>
+    <addaction name="actionRemove"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <widget class="QMenu" name="menuLanguage">
+     <property name="title">
+      <string>Language</string>
+     </property>
+     <addaction name="actionEnglish"/>
+     <addaction name="actionUkrainian"/>
+    </widget>
+    <addaction name="menuLanguage"/>
+    <addaction name="actionAboutProgram"/>
+   </widget>
+   <addaction name="menuTask"/>
+   <addaction name="menuSettings"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionMyDay"/>
+   <addaction name="actionImportant"/>
+   <addaction name="actionAll"/>
+   <addaction name="actionPlanned"/>
+   <addaction name="actionCompleted"/>
+   <addaction name="actionFailed"/>
+  </widget>
+  <action name="actionMyDay">
+   <property name="icon">
+    <iconset resource="ToDoList.qrc">
+     <normaloff>:/ToDoList/Assets/myday_icon.png</normaloff>:/ToDoList/Assets/myday_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>My Day</string>
+   </property>
+  </action>
+  <action name="actionImportant">
+   <property name="icon">
+    <iconset resource="ToDoList.qrc">
+     <normaloff>:/ToDoList/Assets/important_icon.png</normaloff>:/ToDoList/Assets/important_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Important</string>
+   </property>
+  </action>
+  <action name="actionAll">
+   <property name="icon">
+    <iconset resource="ToDoList.qrc">
+     <normaloff>:/ToDoList/Assets/all_icon.png</normaloff>:/ToDoList/Assets/all_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionPlanned">
+   <property name="icon">
+    <iconset resource="ToDoList.qrc">
+     <normaloff>:/ToDoList/Assets/planned_icon.png</normaloff>:/ToDoList/Assets/planned_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Planned</string>
+   </property>
+  </action>
+  <action name="actionCompleted">
+   <property name="icon">
+    <iconset resource="ToDoList.qrc">
+     <normaloff>:/ToDoList/Assets/done_icon.png</normaloff>:/ToDoList/Assets/done_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Completed</string>
+   </property>
+  </action>
+  <action name="actionFailed">
+   <property name="icon">
+    <iconset resource="ToDoList.qrc">
+     <normaloff>:/ToDoList/Assets/failed_icon.png</normaloff>:/ToDoList/Assets/failed_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Failed</string>
+   </property>
+  </action>
+  <action name="actionAdd">
+   <property name="text">
+    <string>Add</string>
+   </property>
+  </action>
+  <action name="actionEdit">
+   <property name="text">
+    <string>Edit</string>
+   </property>
+  </action>
+  <action name="actionRemove">
+   <property name="text">
+    <string>Remove</string>
+   </property>
+  </action>
+  <action name="actionAboutProgram">
+   <property name="text">
+    <string>About Program</string>
+   </property>
+  </action>
+  <action name="actionEnglish">
+   <property name="text">
+    <string>English</string>
+   </property>
+  </action>
+  <action name="actionUkrainian">
+   <property name="text">
+    <string>Ukrainian</string>
+   </property>
+  </action>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources>
-   <include location="ToDoList.qrc"/>
+  <include location="ToDoList.qrc"/>
  </resources>
  <connections/>
-</UI>
+</ui>

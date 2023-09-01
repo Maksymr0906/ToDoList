@@ -1,7 +1,10 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
+#include <QMainWindow>
 #include "ui_ToDoList.h"
+#include "Task.hpp"
+#include "NewTaskDialog.hpp"
+
 #include <QMessageBox>
 #include <QTSql>
 
@@ -14,5 +17,16 @@ public:
     ~ToDoList();
 
 private:
-    Ui::ToDoListClass ui;
+    Ui::ToDoListClass *ui;
+private slots:
+    void actionAddTriggered();
+    void actionEditTriggered();
+    void actionRemoveTriggered();
+    void actionMyDayTriggered();
+    void actionImportantTriggered();
+    void actionAllTriggered();
+    void actionPlannedTriggered();
+    void actionCompletedTriggered();
+    void actionFailedTriggered();
+    void actionAboutProgramTriggered();
 };

@@ -2,6 +2,13 @@
 
 #include <QString>
 
+enum class STATUS {
+	NONE = 0,
+	PLANNED,
+	IN_PROCESS,
+	COMPLETED
+};
+
 class Task {
 private:
 	int id;

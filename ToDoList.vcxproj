@@ -84,13 +84,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <QtRcc Include="ToDoList.qrc" />
+    <QtUic Include="NewTaskDialog.ui" />
     <QtUic Include="ToDoList.ui" />
     <QtMoc Include="ToDoList.hpp" />
+    <ClCompile Include="NewTaskDialog.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="ToDoList.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="NewTaskDialog.hpp" />
     <ClInclude Include="Task.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

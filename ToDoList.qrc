@@ -6,5 +6,6 @@
         <file>Assets/important_icon.png</file>
         <file>Assets/myday_icon.png</file>
         <file>Assets/planned_icon.png</file>
+        <file>Assets/program_icon.png</file>
     </qresource>
 </RCC>
