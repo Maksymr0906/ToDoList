@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/ToDoList">
+        <file>Assets/all_icon.png</file>
+        <file>Assets/done_icon.png</file>
+        <file>Assets/failed_icon.png</file>
+        <file>Assets/important_icon.png</file>
+        <file>Assets/myday_icon.png</file>
+        <file>Assets/planned_icon.png</file>
+    </qresource>
+</RCC>
