@@ -5,6 +5,7 @@
 #include "Task.hpp"
 #include "NewTaskDialog.hpp"
 
+#include <QPixmap>
 #include <QMessageBox>
 #include <QTSql>
 

@@ -4,7 +4,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    ToDoList w;
-    w.show();
+    ToDoList mainWindow;
+    mainWindow.setFixedSize(800, 600);
+    mainWindow.show();
     return a.exec();
 }

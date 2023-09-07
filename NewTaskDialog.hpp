@@ -6,6 +6,11 @@
 
 class NewTaskDialog : public QDialog {
 private:
-	Ui::NewTaskDialogClass ui;
+	Ui::NewTaskDialogClass *ui;
+public:
+	NewTaskDialog(QWidget *parent = nullptr) 
+		:QDialog(parent), ui(new Ui::NewTaskDialogClass) {
+		ui->setupUi(this);
+	}
 };
 
