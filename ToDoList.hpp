@@ -8,6 +8,7 @@
 #include <QPixmap>
 #include <QMessageBox>
 #include <QTSql>
+#include <QMap>
 
 class ToDoList : public QMainWindow
 {
@@ -30,4 +31,8 @@ private slots:
     void actionCompletedTriggered();
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
+    void refreshTasks(const QString &queryCondition, TASK_TYPE taskType);
+    void refreshTitle(TASK_TYPE taskType);
+    void refreshTitleText(TASK_TYPE taskType);
+    void refreshTitleIcon(TASK_TYPE taskType);
 };

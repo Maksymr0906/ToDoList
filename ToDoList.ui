@@ -18,7 +18,7 @@
     <normaloff>:/ToDoList/Assets/program_icon.png</normaloff>:/ToDoList/Assets/program_icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QFrame" name="headerFrame">
+   <widget class="QFrame" name="titleFrame">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -54,7 +54,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="headerText">
+      <widget class="QLabel" name="titleText">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -78,7 +78,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="headerImage">
+      <widget class="QLabel" name="titleImage">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -149,7 +149,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>158</height>
+           <height>40</height>
           </size>
          </property>
         </spacer>

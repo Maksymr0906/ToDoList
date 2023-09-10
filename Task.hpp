@@ -3,25 +3,31 @@
 #include <QString>
 
 enum class STATUS {
-	NONE = 0,
+	IN_PROCESS = 0,
+	COMPLETED,
+	FAILED
+};
+
+enum class TASK_TYPE {
+	MY_DAY = 1,
+	IMPORTANT,
+	ALL,
 	PLANNED,
-	IN_PROCESS,
-	COMPLETED
+	COMPLETED,
+	FAILED
 };
 
 class Task {
 private:
-	QString taskName;
-	QString responsible;
-	QString email;
-	QString deadline;
-	int status;
-public:
-	Task(QString taskName, QString responsible, QString email, QString deadline, int status)
-		:taskName{taskName}, responsible{responsible}, email{email}, deadline{deadline}, status{status} {}
 
-	QString getAsQString() {
-		return taskName + " " + responsible + " " + email + " " + deadline + " " + QString::number(status);
-	}
+protected:
+	QString taskName;
+	QString deadline;
+	bool isMyDay;
+	bool isImportant;
+	STATUS status;
+public:
+	Task(QString taskName, QString deadline, int status, bool isMyDay, bool isImportant)
+		:taskName{ taskName }, deadline{ deadline }, status{ status }, isMyDay{ isMyDay }, isImportant{ isImportant } {}
 };
 
