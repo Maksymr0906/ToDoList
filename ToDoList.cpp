@@ -39,8 +39,23 @@ ToDoList::~ToDoList() {
 
 void ToDoList::actionAddTriggered() {
     NewTaskDialog newTaskDialog;
-    newTaskDialog.exec();
-    QMessageBox::information(this, "Add", "Action Add triggered");
+    newTaskDialog.setFixedSize(317, 255);
+    if(newTaskDialog.exec() == QDialog::Accepted) {
+        QSqlQuery insertQuery;
+        QString insertQueryString = "insert into todolist(task_name, deadline, status, is_important, is_my_day)"
+            "values('%1', '%2', '%3', '%4', '%5');";
+        bool insertResult = insertQuery.exec(insertQueryString.arg(newTaskDialog.getTaskName())
+                                             .arg(newTaskDialog.getDeadline())
+                                             .arg(0)
+                                             .arg(newTaskDialog.getIsImportant())
+                                             .arg(newTaskDialog.getIsMyDay())
+        );
+        if(!insertResult) {
+            QMessageBox::critical(this, tr("Error"), tr("Can't add new task!"));
+            return;
+        }
+        refreshTasks("SELECT * FROM todolist;", TASK_TYPE::ALL);
+    }
 }
 
 void ToDoList::actionEditTriggered() {
@@ -109,6 +124,7 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         QString taskName = selectQuery.value("task_name").toString();
         QString deadline = selectQuery.value("deadline").toString();
         int status = selectQuery.value("status").toInt();
+        Task task{ taskName, deadline, status };
 
         QFrame *newTaskFrame = new QFrame();
         newTaskFrame->setFrameStyle(QFrame::StyledPanel);
@@ -124,8 +140,8 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         Vframe->setLayout(taskDetails);
 
         QLabel *titlelabel = new QLabel(tr("Task #%1").arg(vMainLayout->count()));
-        QLabel *tasklabel = new QLabel(taskName);
-        QLabel *datelabel = new QLabel(deadline);
+        QLabel *tasklabel = new QLabel(task.taskName);
+        QLabel *datelabel = new QLabel(task.deadline);
 
         taskDetails->addWidget(titlelabel);
         taskDetails->addWidget(tasklabel);

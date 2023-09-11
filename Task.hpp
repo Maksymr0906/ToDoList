@@ -17,17 +17,14 @@ enum class TASK_TYPE {
 	FAILED
 };
 
-class Task {
-private:
-
-protected:
+struct Task {
 	QString taskName;
 	QString deadline;
 	bool isMyDay;
 	bool isImportant;
 	STATUS status;
-public:
-	Task(QString taskName, QString deadline, int status, bool isMyDay, bool isImportant)
+
+	Task(QString taskName = "Empty", QString deadline = "2000.01.01", int status = 0, bool isMyDay = false, bool isImportant = false)
 		:taskName{ taskName }, deadline{ deadline }, status{ status }, isMyDay{ isMyDay }, isImportant{ isImportant } {}
 };
 
