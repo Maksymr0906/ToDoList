@@ -31,6 +31,8 @@ ToDoList::ToDoList(QWidget *parent)
     connect(ui->actionCompleted, &QAction::triggered, this, &ToDoList::actionCompletedTriggered);
     connect(ui->actionFailed, &QAction::triggered, this, &ToDoList::actionFailedTriggered);
     connect(ui->actionAboutProgram, &QAction::triggered, this, &ToDoList::actionAboutProgramTriggered);
+
+    refreshTasks("SELECT * FROM todolist WHERE is_my_day;", TASK_TYPE::MY_DAY);
 }
 
 ToDoList::~ToDoList() {
@@ -38,6 +40,7 @@ ToDoList::~ToDoList() {
 }
 
 void ToDoList::actionAddTriggered() {
+    const int IN_PROCESS = 0;
     NewTaskDialog newTaskDialog;
     newTaskDialog.setFixedSize(317, 255);
     if(newTaskDialog.exec() == QDialog::Accepted) {
@@ -46,14 +49,15 @@ void ToDoList::actionAddTriggered() {
             "values('%1', '%2', '%3', '%4', '%5');";
         bool insertResult = insertQuery.exec(insertQueryString.arg(newTaskDialog.getTaskName())
                                              .arg(newTaskDialog.getDeadline())
-                                             .arg(0)
+                                             .arg(IN_PROCESS)
                                              .arg(newTaskDialog.getIsImportant())
                                              .arg(newTaskDialog.getIsMyDay())
         );
         if(!insertResult) {
-            QMessageBox::critical(this, tr("Error"), tr("Can't add new task!"));
+            QMessageBox::critical(this, tr("Error"), tr("Adding task error"));
             return;
         }
+
         refreshTasks("SELECT * FROM todolist;", TASK_TYPE::ALL);
     }
 }

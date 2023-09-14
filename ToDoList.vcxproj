@@ -93,7 +93,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="NewTaskDialog.hpp" />
+    <QtMoc Include="DateValidator.hpp" />
+    <QtMoc Include="NewTaskDialog.hpp" />
     <ClInclude Include="Task.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

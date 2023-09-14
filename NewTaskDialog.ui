@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>317</width>
-    <height>255</height>
+    <height>434</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,33 +25,57 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QLabel" name="taskNameLabel">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Task Name</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QTextEdit" name="taskNameTextEdit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="lineWrapMode">
-         <enum>QTextEdit::WidgetWidth</enum>
+       <widget class="QLineEdit" name="taskNameLineEdit">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="deadlineLabel">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Deadline</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QTextEdit" name="deadlineTextEdit"/>
+       <widget class="QLineEdit" name="deadlineLineEdit">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="dateStateLabel">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
