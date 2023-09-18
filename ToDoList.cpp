@@ -130,7 +130,7 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         int status = selectQuery.value("status").toInt();
         Task task{ taskName, deadline, status };
 
-        QFrame *newTaskFrame = new QFrame();
+        ClickableFrame *newTaskFrame = new ClickableFrame();
         newTaskFrame->setFrameStyle(QFrame::StyledPanel);
 
         QHBoxLayout *newTask = new QHBoxLayout(newTaskFrame);
@@ -197,7 +197,13 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         myDayBtn->setIcon(myDayBtnIcon);
         myDayBtn->setIconSize(QSize(45, 45));
         myDayBtn->setStyleSheet("background-color: transparent; border: none;");
+
+        connect(newTaskFrame, &ClickableFrame::clicked, this, &ToDoList::test);
     }
+}
+
+void ToDoList::test() {
+    QMessageBox::information(this, "Edit or delete", "Edit or delete");
 }
 
 void ToDoList::refreshTitle(TASK_TYPE taskType) {

@@ -4,6 +4,7 @@
 #include "ui_ToDoList.h"
 #include "Task.hpp"
 #include "NewTaskDialog.hpp"
+#include "ClickableFrame.hpp"
 
 #include <QPixmap>
 #include <QMessageBox>
@@ -35,4 +36,6 @@ private slots:
     void refreshTitle(TASK_TYPE taskType);
     void refreshTitleText(TASK_TYPE taskType);
     void refreshTitleIcon(TASK_TYPE taskType);
+
+    void test();
 };

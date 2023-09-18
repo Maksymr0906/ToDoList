@@ -95,6 +95,7 @@
   <ItemGroup>
     <QtMoc Include="DateValidator.hpp" />
     <QtMoc Include="NewTaskDialog.hpp" />
+    <QtMoc Include="ClickableFrame.hpp" />
     <ClInclude Include="Task.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

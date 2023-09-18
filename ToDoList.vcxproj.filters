@@ -64,5 +64,8 @@
     <QtMoc Include="NewTaskDialog.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="ClickableFrame.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
 </Project>
