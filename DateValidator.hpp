@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QValidator>
 #include <QtWidgets>
 

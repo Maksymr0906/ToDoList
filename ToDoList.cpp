@@ -2,7 +2,8 @@
 
 ToDoList::ToDoList(QWidget *parent)
     : QMainWindow(parent),
-      ui(new Ui::ToDoListClass) {
+      ui(new Ui::ToDoListClass),
+      validator{ new DateValidator() } {
     ui->setupUi(this);
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("localhost");
@@ -128,7 +129,9 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         QString taskName = selectQuery.value("task_name").toString();
         QString deadline = selectQuery.value("deadline").toString();
         int status = selectQuery.value("status").toInt();
-        Task task{ taskName, deadline, status };
+        bool isMyDay = selectQuery.value("is_my_day").toBool();
+        bool isImportant = selectQuery.value("is_important").toBool();
+        Task task{ taskName, deadline, status, isMyDay, isImportant };
 
         ClickableFrame *newTaskFrame = new ClickableFrame();
         newTaskFrame->setFrameStyle(QFrame::StyledPanel);
@@ -198,12 +201,22 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         myDayBtn->setIconSize(QSize(45, 45));
         myDayBtn->setStyleSheet("background-color: transparent; border: none;");
 
-        connect(newTaskFrame, &ClickableFrame::clicked, this, &ToDoList::test);
+        connect(newTaskFrame, &ClickableFrame::clicked, this, [this, task]() {
+            test(task);
+            });
     }
 }
 
-void ToDoList::test() {
-    QMessageBox::information(this, "Edit or delete", "Edit or delete");
+void ToDoList::test(Task task) {
+    EditTaskDialog editTaskDialog;
+    editTaskDialog.setTaskName(task.taskName);
+    editTaskDialog.setDeadline(task.deadline);
+    editTaskDialog.setIsImportant(task.isImportant);
+    editTaskDialog.setIsMyDay(task.isMyDay);
+
+    if (editTaskDialog.exec() == QDialog::Accepted) {
+        
+    }
 }
 
 void ToDoList::refreshTitle(TASK_TYPE taskType) {

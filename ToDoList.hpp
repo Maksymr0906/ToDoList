@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QMainWindow>
 #include "ui_ToDoList.h"
 #include "Task.hpp"
 #include "NewTaskDialog.hpp"
 #include "ClickableFrame.hpp"
+#include "EditTaskDialog.hpp"
 
 #include <QPixmap>
 #include <QMessageBox>
 #include <QTSql>
 #include <QMap>
+#include <QMainWindow>
 
 class ToDoList : public QMainWindow
 {
@@ -21,6 +22,7 @@ public:
 
 private:
     Ui::ToDoListClass *ui;
+    DateValidator* validator;
 private slots:
     void actionAddTriggered();
     void actionEditTriggered();
@@ -37,5 +39,5 @@ private slots:
     void refreshTitleText(TASK_TYPE taskType);
     void refreshTitleIcon(TASK_TYPE taskType);
 
-    void test();
+    void test(Task task);
 };

@@ -5,16 +5,16 @@
 #include <QDialog>
 #include <memory>
 
-#include "ui_NewTaskDialog.h"
+#include "ui_EditTaskDialog.h"
 #include "DateValidator.hpp"
 
-class NewTaskDialog : public QDialog {
+class EditTaskDialog : public QDialog {
     Q_OBJECT
 private:
-    std::unique_ptr<Ui::NewTaskDialogClass> ui;
+    std::unique_ptr<Ui::EditTaskDialog> ui;
 
 public:
-    NewTaskDialog(QWidget* parent = nullptr) : QDialog(parent), ui(new Ui::NewTaskDialogClass) {
+    EditTaskDialog(QWidget* parent = nullptr) : QDialog(parent), ui(new Ui::EditTaskDialog()) {
         ui->setupUi(this);
         DateValidator* dateValidator = new DateValidator(this);
         ui->deadlineLineEdit->setValidator(dateValidator);
@@ -27,6 +27,11 @@ public:
     QString getDeadline() const { return ui->deadlineLineEdit->text(); }
     bool getIsImportant() const { return ui->isImportantCheckBox->isChecked(); }
     bool getIsMyDay() const { return ui->isMyDayCheckBox->isChecked(); }
+
+    void setTaskName(QString taskName) { ui->taskNameLineEdit->setText(taskName); }
+    void setDeadline(QString deadline) { ui->deadlineLineEdit->setText(deadline); }
+    void setIsMyDay(bool isMyDay) { ui->isMyDayCheckBox->setChecked(isMyDay); }
+    void setIsImportant(bool isImportant) { ui->isImportantCheckBox->setChecked(isImportant); }
 
 public slots:
     void invalidDateSlot() {

@@ -40,10 +40,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Task.cpp">
+    <ClCompile Include="NewTaskDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NewTaskDialog.cpp">
+    <ClCompile Include="EditTaskDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,6 +56,9 @@
     <QtUic Include="NewTaskDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="EditTaskDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DateValidator.hpp">
@@ -65,6 +68,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ClickableFrame.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="EditTaskDialog.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
