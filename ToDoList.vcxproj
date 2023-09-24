@@ -90,13 +90,14 @@
     <QtMoc Include="ToDoList.hpp" />
     <ClCompile Include="EditTaskDialog.cpp" />
     <ClCompile Include="NewTaskDialog.cpp" />
+    <ClCompile Include="TaskFrame.cpp" />
     <ClCompile Include="ToDoList.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="TaskFrame.hpp" />
     <QtMoc Include="DateValidator.hpp" />
     <QtMoc Include="NewTaskDialog.hpp" />
-    <QtMoc Include="ClickableFrame.hpp" />
     <QtMoc Include="EditTaskDialog.hpp" />
     <ClInclude Include="Task.hpp" />
   </ItemGroup>

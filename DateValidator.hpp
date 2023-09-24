@@ -18,7 +18,7 @@ public:
         }
         else {
             emit invalidDateSignal();
-            return Intermediate;
+            return Invalid;
         }
     }
 

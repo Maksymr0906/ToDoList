@@ -2,8 +2,7 @@
 
 ToDoList::ToDoList(QWidget *parent)
     : QMainWindow(parent),
-      ui(new Ui::ToDoListClass),
-      validator{ new DateValidator() } {
+      ui(new Ui::ToDoListClass) {
     ui->setupUi(this);
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("localhost");
@@ -13,10 +12,6 @@ ToDoList::ToDoList(QWidget *parent)
 
     if(!db.open())
         QMessageBox::critical(this, "Error", "Error opening database");
-    QSqlTableModel *model = new QSqlTableModel;
-    model->setTable("todolist");
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->select();
 
     // connects
     connect(ui->actionAdd, &QAction::triggered, this, &ToDoList::actionAddTriggered);
@@ -42,17 +37,17 @@ ToDoList::~ToDoList() {
 
 void ToDoList::actionAddTriggered() {
     const int IN_PROCESS = 0;
-    NewTaskDialog newTaskDialog;
-    newTaskDialog.setFixedSize(317, 255);
-    if(newTaskDialog.exec() == QDialog::Accepted) {
+    std::unique_ptr<NewTaskDialog> newTaskDialog = std::make_unique<NewTaskDialog>();
+    newTaskDialog->setFixedSize(317, 255);
+    if(newTaskDialog->exec() == QDialog::Accepted) {
         QSqlQuery insertQuery;
         QString insertQueryString = "insert into todolist(task_name, deadline, status, is_important, is_my_day)"
             "values('%1', '%2', '%3', '%4', '%5');";
-        bool insertResult = insertQuery.exec(insertQueryString.arg(newTaskDialog.getTaskName())
-                                             .arg(newTaskDialog.getDeadline())
+        bool insertResult = insertQuery.exec(insertQueryString.arg(newTaskDialog->getTaskName())
+                                             .arg(newTaskDialog->getDeadline())
                                              .arg(IN_PROCESS)
-                                             .arg(newTaskDialog.getIsImportant())
-                                             .arg(newTaskDialog.getIsMyDay())
+                                             .arg(newTaskDialog->getIsImportant())
+                                             .arg(newTaskDialog->getIsMyDay())
         );
         if(!insertResult) {
             QMessageBox::critical(this, tr("Error"), tr("Adding task error"));
@@ -99,6 +94,24 @@ void ToDoList::actionAboutProgramTriggered() {
     QMessageBox::information(this, "About Program", "Action About Program triggered");
 }
 
+void ToDoList::clearTaskWidgets() {
+    QVBoxLayout* vMainLayout = qobject_cast<QVBoxLayout*>(ui->allNewTasksContents->layout());
+
+    QLayoutItem* child;
+    while ((child = vMainLayout->takeAt(0)) != nullptr) {
+        QWidget* widget = child->widget();
+        if (widget) {
+            delete widget;
+        }
+        if(child)
+            delete child;
+    }
+}
+
+void ToDoList::fillTasks() {
+
+}
+
 void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
     refreshTitle(taskType);
     QPixmap failedBtnIcon("Assets/failed_icon.png");
@@ -110,112 +123,61 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         return;
     }
 
-    QLayout *layout = ui->allNewTasksContents->layout();
-    if(layout) {
-        QLayoutItem *child;
-        while((child = layout->takeAt(0)) != nullptr) {
-            delete child->widget();
-            delete child;
-        }
-    }
+    clearTaskWidgets();
 
     QVBoxLayout *vMainLayout = qobject_cast<QVBoxLayout *>(ui->allNewTasksContents->layout());
     QSpacerItem *verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
     vMainLayout->addSpacerItem(verticalSpacer);
-
+    
     QVector<QString> colors = { "rgba(66, 165, 245,1.0)", "rgba(41, 182, 246,1.0)", "rgba(38, 198, 218,1.0)", "rgba(38, 166, 154,1.0)", "rgba(102, 187, 106,1.0)", "rgba(156, 204, 101,1.0)", "rgba(212, 225, 87,1.0)", "rgba(255, 238, 88,1.0)", "rgba(255, 202, 40,1.0)", "rgba(255, 167, 38,1.0)" };
 
     while(selectQuery.next()) {
-        QString taskName = selectQuery.value("task_name").toString();
-        QString deadline = selectQuery.value("deadline").toString();
-        int status = selectQuery.value("status").toInt();
-        bool isMyDay = selectQuery.value("is_my_day").toBool();
-        bool isImportant = selectQuery.value("is_important").toBool();
-        Task task{ taskName, deadline, status, isMyDay, isImportant };
+        Task task;
+        task.taskName = selectQuery.value("task_name").toString();
+        task.deadline = selectQuery.value("deadline").toString();
+        task.status = static_cast<STATUS>(selectQuery.value("status").toInt());
+        task.isMyDay = selectQuery.value("is_my_day").toBool();
+        task.isImportant = selectQuery.value("is_important").toBool();
 
-        ClickableFrame *newTaskFrame = new ClickableFrame();
-        newTaskFrame->setFrameStyle(QFrame::StyledPanel);
-
-        QHBoxLayout *newTask = new QHBoxLayout(newTaskFrame);
-        newTaskFrame->setLayout(newTask);
-
-        QPushButton *myDayBtn = new QPushButton();
-        newTask->addWidget(myDayBtn);
-
-        QFrame *Vframe = new QFrame();
-        QVBoxLayout *taskDetails = new QVBoxLayout(Vframe);
-        Vframe->setLayout(taskDetails);
-
-        QLabel *titlelabel = new QLabel(tr("Task #%1").arg(vMainLayout->count()));
-        QLabel *tasklabel = new QLabel(task.taskName);
-        QLabel *datelabel = new QLabel(task.deadline);
-
-        taskDetails->addWidget(titlelabel);
-        taskDetails->addWidget(tasklabel);
-        taskDetails->addWidget(datelabel);
-
-        newTask->addWidget(Vframe);
-        QSpacerItem *spacer = new QSpacerItem(100, 100, QSizePolicy::Expanding, QSizePolicy::Minimum);
-        newTask->addSpacerItem(spacer);
-
-        QFrame *buttons = new QFrame();
-        QVBoxLayout *buttonsLayout = new QVBoxLayout(buttons);
-        buttons->setLayout(buttonsLayout);
-
-        QPushButton *deleteBtn = new QPushButton();
-        QPushButton *doneBtn = new QPushButton();
-
-        buttonsLayout->addWidget(deleteBtn);
-        buttonsLayout->addWidget(doneBtn);
-
-        newTask->addWidget(buttons);
+        TaskFrame* newTaskFrame = new TaskFrame(task, this);
         vMainLayout->insertWidget(0, newTaskFrame);
-
-        int randomVal = (((rand() % 50) % 100) % (colors.size() - 1));
-
-        newTaskFrame->setObjectName("NewTask");
-        newTaskFrame->setStyleSheet("#NewTask { border-radius: 10px; border: 1px solid black; background-color: " + colors[randomVal] + "; }");
-
-        if(static_cast<STATUS>(status) == STATUS::COMPLETED) {
-            tasklabel->setObjectName("TaskName");
-            tasklabel->setStyleSheet("#TaskName { font: bold 11pt 'Verdana'; color: gray; text-decoration: line-through; }");
-        }
-        else if(static_cast<STATUS>(status) == STATUS::FAILED) {
-            tasklabel->setObjectName("TaskName");
-            tasklabel->setStyleSheet("#TaskName { font: bold 11pt 'Verdana'; color: red; }");
-        }
-        else {
-            tasklabel->setObjectName("TaskName");
-            tasklabel->setStyleSheet("#TaskName { font: bold 11pt black 'Verdana'; }");
-        }
-
-        deleteBtn->setIcon(failedBtnIcon);
-        deleteBtn->setIconSize(QSize(30, 30));
-        deleteBtn->setStyleSheet("background-color: transparent; border: none;");
-
-        doneBtn->setIcon(doneBtnIcon);
-        doneBtn->setIconSize(QSize(30, 30));
-        doneBtn->setStyleSheet("background-color: transparent; border: none;");
-
-        myDayBtn->setIcon(myDayBtnIcon);
-        myDayBtn->setIconSize(QSize(45, 45));
-        myDayBtn->setStyleSheet("background-color: transparent; border: none;");
-
-        connect(newTaskFrame, &ClickableFrame::clicked, this, [this, task]() {
-            test(task);
-            });
+        
+        connect(newTaskFrame, &TaskFrame::clicked, this, [this, task]() {
+            editTask(task);
+        });
     }
 }
 
-void ToDoList::test(Task task) {
-    EditTaskDialog editTaskDialog;
-    editTaskDialog.setTaskName(task.taskName);
-    editTaskDialog.setDeadline(task.deadline);
-    editTaskDialog.setIsImportant(task.isImportant);
-    editTaskDialog.setIsMyDay(task.isMyDay);
+void ToDoList::editTask(Task task) {
+    std::unique_ptr<EditTaskDialog> editTaskDialog = std::make_unique<EditTaskDialog>();
+    editTaskDialog->setTaskName(task.taskName);
+    editTaskDialog->setDeadline(task.deadline);
+    editTaskDialog->setIsImportant(task.isImportant);
+    editTaskDialog->setIsMyDay(task.isMyDay);
 
-    if (editTaskDialog.exec() == QDialog::Accepted) {
-        
+    if (editTaskDialog->exec() == QDialog::Accepted) {
+        QSqlQuery updateQuery;
+        QString updateQueryString = "UPDATE todolist "
+            "SET task_name = :new_task_name, deadline = :new_deadline, status = :new_status, is_important = :new_important, is_my_day = :new_my_day "
+            "WHERE task_name = :old_task_name AND deadline = :old_deadline AND status = :old_status AND is_important = :old_important AND is_my_day = :old_my_day;";
+
+        updateQuery.prepare(updateQueryString);
+        updateQuery.bindValue(":new_task_name", editTaskDialog->getTaskName());
+        updateQuery.bindValue(":new_deadline", editTaskDialog->getDeadline());
+        updateQuery.bindValue(":new_status", static_cast<int>(task.status));
+        updateQuery.bindValue(":new_important", editTaskDialog->getIsImportant());
+        updateQuery.bindValue(":new_my_day", editTaskDialog->getIsMyDay());
+        updateQuery.bindValue(":old_task_name", task.taskName);
+        updateQuery.bindValue(":old_deadline", task.deadline);
+        updateQuery.bindValue(":old_status", static_cast<int>(task.status));
+        updateQuery.bindValue(":old_important", task.isImportant);
+        updateQuery.bindValue(":old_my_day", task.isMyDay);
+        if (!updateQuery.exec()) {
+            QMessageBox::critical(this, tr("Error"), tr("Updating task error: %1").arg(updateQuery.lastError().text()));
+            return;
+        }
+
+        refreshTasks("SELECT * FROM todolist", TASK_TYPE::ALL);
     }
 }
 

@@ -16,11 +16,11 @@ private:
 public:
     NewTaskDialog(QWidget* parent = nullptr) : QDialog(parent), ui(new Ui::NewTaskDialogClass) {
         ui->setupUi(this);
-        DateValidator* dateValidator = new DateValidator(this);
-        ui->deadlineLineEdit->setValidator(dateValidator);
+        std::unique_ptr<DateValidator> dateValidator = std::make_unique<DateValidator>(this);
+        ui->deadlineLineEdit->setValidator(dateValidator.get());
 
-        connect(dateValidator, SIGNAL(invalidDateSignal()), this, SLOT(invalidDateSlot()));
-        connect(dateValidator, SIGNAL(validDateSignal()), this, SLOT(validDateSlot()));
+        connect(dateValidator.get(), &DateValidator::invalidDateSignal, this, &NewTaskDialog::invalidDateSlot);
+        connect(dateValidator.get(), &DateValidator::validDateSignal, this, &NewTaskDialog::validDateSlot);
     }
 
     QString getTaskName() const { return ui->taskNameLineEdit->text(); }
