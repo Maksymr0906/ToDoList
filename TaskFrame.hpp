@@ -7,11 +7,17 @@
 #include <QLayout>
 #include <QVector>
 #include <QString>
+#include <QMessageBox>
+#include <QTSql>
 
 #include "Task.hpp"
 
 class TaskFrame : public QFrame {
     Q_OBJECT
+private slots:
+    void doneBtnClicked();
+    void failedBtnClicked();
+    void myDayBtnClicked();
 signals:
     void clicked();
 public:
@@ -26,7 +32,7 @@ public:
     QSpacerItem* spacer;
     QFrame* buttons;
     QVBoxLayout* buttonsLayout;
-    QPushButton* deleteBtn;
+    QPushButton* failedBtn;
     QPushButton* doneBtn;
 
     void mousePressEvent(QMouseEvent* event) override {
@@ -66,10 +72,10 @@ public:
         buttonsLayout = new QVBoxLayout(buttons);
         buttons->setLayout(buttonsLayout);
 
-        deleteBtn = new QPushButton();
+        failedBtn = new QPushButton();
         doneBtn = new QPushButton();
 
-        buttonsLayout->addWidget(deleteBtn);
+        buttonsLayout->addWidget(failedBtn);
         buttonsLayout->addWidget(doneBtn);
 
         taskLayout->addWidget(buttons);
@@ -92,9 +98,9 @@ public:
             taskLabel->setStyleSheet("#TaskName { font: bold 11pt black 'Verdana'; }");
         }
 
-        deleteBtn->setIcon(failedBtnIcon);
-        deleteBtn->setIconSize(QSize(30, 30));
-        deleteBtn->setStyleSheet("background-color: transparent; border: none;");
+        failedBtn->setIcon(failedBtnIcon);
+        failedBtn->setIconSize(QSize(30, 30));
+        failedBtn->setStyleSheet("background-color: transparent; border: none;");
 
         doneBtn->setIcon(doneBtnIcon);
         doneBtn->setIconSize(QSize(30, 30));
@@ -103,6 +109,10 @@ public:
         myDayBtn->setIcon(myDayBtnIcon);
         myDayBtn->setIconSize(QSize(45, 45));
         myDayBtn->setStyleSheet("background-color: transparent; border: none;");
+
+        connect(myDayBtn, SIGNAL(clicked()), this, SLOT(myDayBtnClicked()));
+        connect(doneBtn, SIGNAL(clicked()), this, SLOT(doneBtnClicked()));
+        connect(failedBtn, SIGNAL(clicked()), this, SLOT(failedBtnClicked()));
     }
     TaskFrame(QWidget* parent = nullptr) : QFrame(parent) {
         QPixmap failedBtnIcon("Assets/failed_icon.png");
@@ -136,10 +146,10 @@ public:
         buttonsLayout = new QVBoxLayout(buttons);
         buttons->setLayout(buttonsLayout);
 
-        deleteBtn = new QPushButton();
+        failedBtn = new QPushButton();
         doneBtn = new QPushButton();
 
-        buttonsLayout->addWidget(deleteBtn);
+        buttonsLayout->addWidget(failedBtn);
         buttonsLayout->addWidget(doneBtn);
 
         taskLayout->addWidget(buttons);
@@ -162,9 +172,9 @@ public:
             taskLabel->setStyleSheet("#TaskName { font: bold 11pt black 'Verdana'; }");
         }
 
-        deleteBtn->setIcon(failedBtnIcon);
-        deleteBtn->setIconSize(QSize(30, 30));
-        deleteBtn->setStyleSheet("background-color: transparent; border: none;");
+        failedBtn->setIcon(failedBtnIcon);
+        failedBtn->setIconSize(QSize(30, 30));
+        failedBtn->setStyleSheet("background-color: transparent; border: none;");
 
         doneBtn->setIcon(doneBtnIcon);
         doneBtn->setIconSize(QSize(30, 30));
@@ -173,6 +183,10 @@ public:
         myDayBtn->setIcon(myDayBtnIcon);
         myDayBtn->setIconSize(QSize(45, 45));
         myDayBtn->setStyleSheet("background-color: transparent; border: none;");
+
+        connect(myDayBtn, SIGNAL(clicked()), this, SLOT(myDayBtnClicked()));
+        connect(doneBtn, SIGNAL(clicked()), this, SLOT(doneBtnClicked()));
+        connect(failedBtn, SIGNAL(clicked()), this, SLOT(failedBtnClicked()));
     }
 };
 

@@ -26,7 +26,9 @@ private:
     void refreshTitleText(TASK_TYPE taskType);
     void refreshTitleIcon(TASK_TYPE taskType);
     void clearTaskWidgets();
+    DateValidator *dateValidator;
 private slots:
+    void refreshBtnClicked();
     void actionAddTriggered();
     void actionEditTriggered();
     void actionRemoveTriggered();
@@ -38,5 +40,4 @@ private slots:
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
     void editTask(Task task);
-    void fillTasks();
 };

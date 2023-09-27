@@ -2,8 +2,11 @@
 
 ToDoList::ToDoList(QWidget *parent)
     : QMainWindow(parent),
-      ui(new Ui::ToDoListClass) {
+      ui(new Ui::ToDoListClass),
+      dateValidator{ new DateValidator(this) } {
     ui->setupUi(this);
+    ui->refreshBtn->setVisible(false);
+    ui->refreshBtn->setEnabled(false);
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("localhost");
     db.setDatabaseName("todolist");
@@ -27,6 +30,7 @@ ToDoList::ToDoList(QWidget *parent)
     connect(ui->actionCompleted, &QAction::triggered, this, &ToDoList::actionCompletedTriggered);
     connect(ui->actionFailed, &QAction::triggered, this, &ToDoList::actionFailedTriggered);
     connect(ui->actionAboutProgram, &QAction::triggered, this, &ToDoList::actionAboutProgramTriggered);
+    connect(ui->refreshBtn, SIGNAL(clicked()), this, SLOT(refreshBtnClicked()));
 
     refreshTasks("SELECT * FROM todolist WHERE is_my_day;", TASK_TYPE::MY_DAY);
 }
@@ -35,9 +39,21 @@ ToDoList::~ToDoList() {
     delete ui;
 }
 
+void ToDoList::refreshBtnClicked() {
+    refreshTasks("SELECT * FROM todolist;", TASK_TYPE::ALL);
+    ui->refreshBtn->setEnabled(false);
+    ui->refreshBtn->setVisible(false);
+    ui->actionAll->setEnabled(true);
+    ui->actionCompleted->setEnabled(true);
+    ui->actionImportant->setEnabled(true);
+    ui->actionFailed->setEnabled(true);
+    ui->actionPlanned->setEnabled(true);
+    ui->actionMyDay->setEnabled(true);
+}
+
 void ToDoList::actionAddTriggered() {
     const int IN_PROCESS = 0;
-    std::unique_ptr<NewTaskDialog> newTaskDialog = std::make_unique<NewTaskDialog>();
+    std::unique_ptr<NewTaskDialog> newTaskDialog = std::make_unique<NewTaskDialog>(dateValidator);
     newTaskDialog->setFixedSize(317, 255);
     if(newTaskDialog->exec() == QDialog::Accepted) {
         QSqlQuery insertQuery;
@@ -106,31 +122,22 @@ void ToDoList::clearTaskWidgets() {
         if(child)
             delete child;
     }
-}
 
-void ToDoList::fillTasks() {
-
+    QSpacerItem* verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    ui->verticalLayout->addSpacerItem(verticalSpacer);
 }
 
 void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
     refreshTitle(taskType);
-    QPixmap failedBtnIcon("Assets/failed_icon.png");
-    QPixmap doneBtnIcon("Assets/done_icon.png");
-    QPixmap myDayBtnIcon("Assets/myday_icon.png");
 
     QSqlQuery selectQuery;
     if(!selectQuery.exec(queryCondition)) {
+        QMessageBox::critical(this, "Error making an querry", "Error making an querry");
         return;
     }
 
     clearTaskWidgets();
-
-    QVBoxLayout *vMainLayout = qobject_cast<QVBoxLayout *>(ui->allNewTasksContents->layout());
-    QSpacerItem *verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    vMainLayout->addSpacerItem(verticalSpacer);
     
-    QVector<QString> colors = { "rgba(66, 165, 245,1.0)", "rgba(41, 182, 246,1.0)", "rgba(38, 198, 218,1.0)", "rgba(38, 166, 154,1.0)", "rgba(102, 187, 106,1.0)", "rgba(156, 204, 101,1.0)", "rgba(212, 225, 87,1.0)", "rgba(255, 238, 88,1.0)", "rgba(255, 202, 40,1.0)", "rgba(255, 167, 38,1.0)" };
-
     while(selectQuery.next()) {
         Task task;
         task.taskName = selectQuery.value("task_name").toString();
@@ -139,8 +146,8 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         task.isMyDay = selectQuery.value("is_my_day").toBool();
         task.isImportant = selectQuery.value("is_important").toBool();
 
-        TaskFrame* newTaskFrame = new TaskFrame(task, this);
-        vMainLayout->insertWidget(0, newTaskFrame);
+        TaskFrame* newTaskFrame = new TaskFrame(task);
+        ui->verticalLayout->insertWidget(0, newTaskFrame);
         
         connect(newTaskFrame, &TaskFrame::clicked, this, [this, task]() {
             editTask(task);
@@ -149,7 +156,7 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
 }
 
 void ToDoList::editTask(Task task) {
-    std::unique_ptr<EditTaskDialog> editTaskDialog = std::make_unique<EditTaskDialog>();
+    std::unique_ptr<EditTaskDialog> editTaskDialog = std::make_unique<EditTaskDialog>(dateValidator);
     editTaskDialog->setTaskName(task.taskName);
     editTaskDialog->setDeadline(task.deadline);
     editTaskDialog->setIsImportant(task.isImportant);
@@ -177,7 +184,15 @@ void ToDoList::editTask(Task task) {
             return;
         }
 
-        refreshTasks("SELECT * FROM todolist", TASK_TYPE::ALL);
+        ui->actionAll->setEnabled(false);
+        ui->actionCompleted->setEnabled(false);
+        ui->actionImportant->setEnabled(false);
+        ui->actionFailed->setEnabled(false);
+        ui->actionPlanned->setEnabled(false);
+        ui->actionMyDay->setEnabled(false);
+        ui->refreshBtn->setEnabled(true);
+        ui->refreshBtn->setVisible(true);
+        QMessageBox::information(this, "Task edited", "Task edited successfully. Press refresh button to continue");
     }
 }
 
