@@ -9,18 +9,25 @@
 #include <QString>
 #include <QMessageBox>
 #include <QTSql>
+#include <memory>
 
 #include "Task.hpp"
+#include "EditTaskDialog.hpp"
 
 class TaskFrame : public QFrame {
     Q_OBJECT
 private slots:
-    void doneBtnClicked();
-    void failedBtnClicked();
-    void myDayBtnClicked();
+    void doneBtnPressed();
+    void failedBtnPressed();
+    void myDayBtnPressed();
+    void failedBtnReleased();
+    void myDayBtnReleased();
+    void doneBtnReleased();
+    void editTask();
 signals:
     void clicked();
 public:
+    DateValidator* dateValidator;
     static const QVector<QString> colors;
     QHBoxLayout *taskLayout;
     QPushButton *myDayBtn;
@@ -34,13 +41,15 @@ public:
     QVBoxLayout* buttonsLayout;
     QPushButton* failedBtn;
     QPushButton* doneBtn;
+    Task task;
 
     void mousePressEvent(QMouseEvent* event) override {
         QFrame::mousePressEvent(event);
         emit clicked();
     }
-    Task task;
+
     TaskFrame(Task newTask, QWidget* parent = nullptr) : task{ newTask }, QFrame(parent) {
+        dateValidator = new DateValidator();
         QPixmap failedBtnIcon("Assets/failed_icon.png");
         QPixmap doneBtnIcon("Assets/done_icon.png");
         QPixmap myDayBtnIcon("Assets/myday_icon.png");
@@ -110,11 +119,16 @@ public:
         myDayBtn->setIconSize(QSize(45, 45));
         myDayBtn->setStyleSheet("background-color: transparent; border: none;");
 
-        connect(myDayBtn, SIGNAL(clicked()), this, SLOT(myDayBtnClicked()));
-        connect(doneBtn, SIGNAL(clicked()), this, SLOT(doneBtnClicked()));
-        connect(failedBtn, SIGNAL(clicked()), this, SLOT(failedBtnClicked()));
+        connect(myDayBtn, &QPushButton::pressed, this, &TaskFrame::myDayBtnPressed);
+        connect(doneBtn, &QPushButton::pressed, this, &TaskFrame::doneBtnPressed);
+        connect(failedBtn, &QPushButton::pressed, this, &TaskFrame::failedBtnPressed);
+        connect(failedBtn, &QPushButton::released, this, &TaskFrame::failedBtnReleased);
+        connect(doneBtn, &QPushButton::released, this, &TaskFrame::doneBtnReleased);
+        connect(myDayBtn, &QPushButton::released, this, &TaskFrame::myDayBtnReleased);
+        connect(this, &TaskFrame::clicked, this, &TaskFrame::editTask);
     }
     TaskFrame(QWidget* parent = nullptr) : QFrame(parent) {
+        dateValidator = new DateValidator();
         QPixmap failedBtnIcon("Assets/failed_icon.png");
         QPixmap doneBtnIcon("Assets/done_icon.png");
         QPixmap myDayBtnIcon("Assets/myday_icon.png");
@@ -187,6 +201,7 @@ public:
         connect(myDayBtn, SIGNAL(clicked()), this, SLOT(myDayBtnClicked()));
         connect(doneBtn, SIGNAL(clicked()), this, SLOT(doneBtnClicked()));
         connect(failedBtn, SIGNAL(clicked()), this, SLOT(failedBtnClicked()));
+        connect(this, &TaskFrame::clicked, this, &TaskFrame::editTask);
     }
 };
 

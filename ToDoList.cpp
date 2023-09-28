@@ -149,51 +149,19 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         TaskFrame* newTaskFrame = new TaskFrame(task);
         ui->verticalLayout->insertWidget(0, newTaskFrame);
         
-        connect(newTaskFrame, &TaskFrame::clicked, this, [this, task]() {
-            editTask(task);
-        });
+        //connect(newTaskFrame, &TaskFrame::clicked, this, &ToDoList::editTask);
     }
 }
 
-void ToDoList::editTask(Task task) {
-    std::unique_ptr<EditTaskDialog> editTaskDialog = std::make_unique<EditTaskDialog>(dateValidator);
-    editTaskDialog->setTaskName(task.taskName);
-    editTaskDialog->setDeadline(task.deadline);
-    editTaskDialog->setIsImportant(task.isImportant);
-    editTaskDialog->setIsMyDay(task.isMyDay);
-
-    if (editTaskDialog->exec() == QDialog::Accepted) {
-        QSqlQuery updateQuery;
-        QString updateQueryString = "UPDATE todolist "
-            "SET task_name = :new_task_name, deadline = :new_deadline, status = :new_status, is_important = :new_important, is_my_day = :new_my_day "
-            "WHERE task_name = :old_task_name AND deadline = :old_deadline AND status = :old_status AND is_important = :old_important AND is_my_day = :old_my_day;";
-
-        updateQuery.prepare(updateQueryString);
-        updateQuery.bindValue(":new_task_name", editTaskDialog->getTaskName());
-        updateQuery.bindValue(":new_deadline", editTaskDialog->getDeadline());
-        updateQuery.bindValue(":new_status", static_cast<int>(task.status));
-        updateQuery.bindValue(":new_important", editTaskDialog->getIsImportant());
-        updateQuery.bindValue(":new_my_day", editTaskDialog->getIsMyDay());
-        updateQuery.bindValue(":old_task_name", task.taskName);
-        updateQuery.bindValue(":old_deadline", task.deadline);
-        updateQuery.bindValue(":old_status", static_cast<int>(task.status));
-        updateQuery.bindValue(":old_important", task.isImportant);
-        updateQuery.bindValue(":old_my_day", task.isMyDay);
-        if (!updateQuery.exec()) {
-            QMessageBox::critical(this, tr("Error"), tr("Updating task error: %1").arg(updateQuery.lastError().text()));
-            return;
-        }
-
-        ui->actionAll->setEnabled(false);
-        ui->actionCompleted->setEnabled(false);
-        ui->actionImportant->setEnabled(false);
-        ui->actionFailed->setEnabled(false);
-        ui->actionPlanned->setEnabled(false);
-        ui->actionMyDay->setEnabled(false);
-        ui->refreshBtn->setEnabled(true);
-        ui->refreshBtn->setVisible(true);
-        QMessageBox::information(this, "Task edited", "Task edited successfully. Press refresh button to continue");
-    }
+void ToDoList::editTask() {
+    ui->actionAll->setEnabled(false);
+    ui->actionCompleted->setEnabled(false);
+    ui->actionImportant->setEnabled(false);
+    ui->actionFailed->setEnabled(false);
+    ui->actionPlanned->setEnabled(false);
+    ui->actionMyDay->setEnabled(false);
+    ui->refreshBtn->setEnabled(true);
+    ui->refreshBtn->setVisible(true);
 }
 
 void ToDoList::refreshTitle(TASK_TYPE taskType) {

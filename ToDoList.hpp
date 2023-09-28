@@ -39,5 +39,5 @@ private slots:
     void actionCompletedTriggered();
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
-    void editTask(Task task);
+    void editTask();
 };
