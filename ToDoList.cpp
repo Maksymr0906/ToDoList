@@ -20,7 +20,6 @@ ToDoList::ToDoList(QWidget *parent)
     connect(ui->actionAdd, &QAction::triggered, this, &ToDoList::actionAddTriggered);
     connect(ui->addTaskButton, SIGNAL(clicked()), this, SLOT(actionAddTriggered()));
     connect(ui->actionEdit, &QAction::triggered, this, &ToDoList::actionEditTriggered);
-    connect(ui->editTaskButton, SIGNAL(clicked()), this, SLOT(actionEditTriggered()));
     connect(ui->actionRemove, &QAction::triggered, this, &ToDoList::actionRemoveTriggered);
     connect(ui->removeTaskButton, SIGNAL(clicked()), this, SLOT(actionRemoveTriggered()));
     connect(ui->actionMyDay, &QAction::triggered, this, &ToDoList::actionMyDayTriggered);
@@ -147,21 +146,9 @@ void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
         task.isImportant = selectQuery.value("is_important").toBool();
 
         TaskFrame* newTaskFrame = new TaskFrame(task);
+        newTaskFrame->setTitleLabelText(tr("Task #%1").arg(ui->verticalLayout->count()));
         ui->verticalLayout->insertWidget(0, newTaskFrame);
-        
-        //connect(newTaskFrame, &TaskFrame::clicked, this, &ToDoList::editTask);
     }
-}
-
-void ToDoList::editTask() {
-    ui->actionAll->setEnabled(false);
-    ui->actionCompleted->setEnabled(false);
-    ui->actionImportant->setEnabled(false);
-    ui->actionFailed->setEnabled(false);
-    ui->actionPlanned->setEnabled(false);
-    ui->actionMyDay->setEnabled(false);
-    ui->refreshBtn->setEnabled(true);
-    ui->refreshBtn->setVisible(true);
 }
 
 void ToDoList::refreshTitle(TASK_TYPE taskType) {

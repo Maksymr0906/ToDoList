@@ -48,6 +48,10 @@ public:
         emit clicked();
     }
 
+    void setTitleLabelText(QString titleText) {
+        titleLabel->setText(titleText);
+    }
+
     TaskFrame(Task newTask, QWidget* parent = nullptr) : task{ newTask }, QFrame(parent) {
         dateValidator = new DateValidator();
         QPixmap failedBtnIcon("Assets/failed_icon.png");
@@ -57,8 +61,8 @@ public:
 
         taskLayout = new QHBoxLayout(this);
         this->setLayout(taskLayout);
-
         myDayBtn = new QPushButton();
+
         taskLayout->addWidget(myDayBtn);
 
         VFrame = new QFrame();
@@ -88,7 +92,7 @@ public:
         buttonsLayout->addWidget(doneBtn);
 
         taskLayout->addWidget(buttons);
-
+        
         int randomVal = (((rand() % 50) % 100) % (colors.size() - 1));
 
         this->setObjectName("NewTask");

@@ -66,6 +66,21 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="statusLabel">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Status:</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="dateStateLabel">
         <property name="font">
          <font>

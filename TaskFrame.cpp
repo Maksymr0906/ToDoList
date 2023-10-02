@@ -161,6 +161,7 @@ void TaskFrame::failedBtnPressed() {
 
 void TaskFrame::editTask() {
     std::unique_ptr<EditTaskDialog> editTaskDialog = std::make_unique<EditTaskDialog>(dateValidator);
+    editTaskDialog->setStatus(task.statusToString());
     editTaskDialog->setTaskName(task.taskName);
     editTaskDialog->setDeadline(task.deadline);
     editTaskDialog->setIsImportant(task.isImportant);
@@ -188,6 +189,10 @@ void TaskFrame::editTask() {
             return;
         }
         
+        task.taskName = editTaskDialog->getTaskName();
+        task.deadline = editTaskDialog->getDeadline();
+        task.isImportant = editTaskDialog->getIsImportant();
+        task.isMyDay = editTaskDialog->getIsMyDay();
         taskLabel->setText(editTaskDialog->getTaskName());
         dateLabel->setText(editTaskDialog->getDeadline());
     }

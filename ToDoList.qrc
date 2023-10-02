@@ -8,5 +8,7 @@
         <file>Assets/planned_icon.png</file>
         <file>Assets/program_icon.png</file>
         <file>Assets/refresh.png</file>
+        <file>Assets/remove_icon.png</file>
+        <file>Assets/add_icon.png</file>
     </qresource>
 </RCC>

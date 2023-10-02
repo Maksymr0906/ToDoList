@@ -142,7 +142,7 @@
        <x>10</x>
        <y>10</y>
        <width>741</width>
-       <height>441</height>
+       <height>431</height>
       </rect>
      </property>
      <property name="widgetResizable">
@@ -154,7 +154,7 @@
         <x>0</x>
         <y>0</y>
         <width>739</width>
-        <height>439</height>
+        <height>429</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -179,9 +179,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>520</y>
+      <y>495</y>
       <width>761</width>
-      <height>56</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -192,16 +192,17 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="editTaskButton">
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-        </font>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="text">
-        <string>Edit task</string>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
        </property>
-      </widget>
+      </spacer>
      </item>
      <item>
       <widget class="QPushButton" name="addTaskButton">
@@ -210,8 +211,22 @@
          <pointsize>16</pointsize>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: transparent; 
+border: none;</string>
+       </property>
        <property name="text">
-        <string>Add task</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ToDoList.qrc">
+         <normaloff>:/ToDoList/Assets/add_icon.png</normaloff>:/ToDoList/Assets/add_icon.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -222,10 +237,37 @@
          <pointsize>16</pointsize>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: transparent;
+ border: none;</string>
+       </property>
        <property name="text">
-        <string>Remove task</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ToDoList.qrc">
+         <normaloff>:/ToDoList/Assets/remove_icon.png</normaloff>:/ToDoList/Assets/remove_icon.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </widget>

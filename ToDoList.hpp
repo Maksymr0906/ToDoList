@@ -3,7 +3,6 @@
 #include <exception>
 #include <QPixmap>
 #include <QMessageBox>
-#include <QTSql>
 #include <QMap>
 #include <QMainWindow>
 
@@ -39,5 +38,4 @@ private slots:
     void actionCompletedTriggered();
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
-    void editTask();
 };
