@@ -9,6 +9,7 @@
 #include "ui_ToDoList.h"
 #include "NewTaskDialog.hpp"
 #include "EditTaskDialog.hpp"
+#include "RemoveTaskDialog.hpp"
 #include "TaskFrame.hpp"
 
 class ToDoList : public QMainWindow
@@ -29,7 +30,6 @@ private:
 private slots:
     void refreshBtnClicked();
     void actionAddTriggered();
-    void actionEditTriggered();
     void actionRemoveTriggered();
     void actionMyDayTriggered();
     void actionImportantTriggered();

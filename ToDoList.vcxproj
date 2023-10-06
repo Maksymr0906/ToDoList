@@ -86,6 +86,7 @@
     <QtRcc Include="ToDoList.qrc" />
     <QtUic Include="EditTaskDialog.ui" />
     <QtUic Include="NewTaskDialog.ui" />
+    <QtUic Include="RemoveTaskDialog.ui" />
     <QtUic Include="ToDoList.ui" />
     <QtMoc Include="ToDoList.hpp" />
     <ClCompile Include="EditTaskDialog.cpp" />
@@ -99,6 +100,7 @@
     <QtMoc Include="DateValidator.hpp" />
     <QtMoc Include="NewTaskDialog.hpp" />
     <QtMoc Include="EditTaskDialog.hpp" />
+    <QtMoc Include="RemoveTaskDialog.hpp" />
     <ClInclude Include="Task.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

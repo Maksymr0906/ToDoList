@@ -286,7 +286,6 @@ border: none;</string>
      <string>Task</string>
     </property>
     <addaction name="actionAdd"/>
-    <addaction name="actionEdit"/>
     <addaction name="actionRemove"/>
    </widget>
    <widget class="QMenu" name="menuSettings">

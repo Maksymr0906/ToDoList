@@ -19,7 +19,6 @@ ToDoList::ToDoList(QWidget *parent)
     // connects
     connect(ui->actionAdd, &QAction::triggered, this, &ToDoList::actionAddTriggered);
     connect(ui->addTaskButton, SIGNAL(clicked()), this, SLOT(actionAddTriggered()));
-    connect(ui->actionEdit, &QAction::triggered, this, &ToDoList::actionEditTriggered);
     connect(ui->actionRemove, &QAction::triggered, this, &ToDoList::actionRemoveTriggered);
     connect(ui->removeTaskButton, SIGNAL(clicked()), this, SLOT(actionRemoveTriggered()));
     connect(ui->actionMyDay, &QAction::triggered, this, &ToDoList::actionMyDayTriggered);
@@ -73,12 +72,20 @@ void ToDoList::actionAddTriggered() {
     }
 }
 
-void ToDoList::actionEditTriggered() {
-    QMessageBox::information(this, "Edit", "Action Edit triggered");
-}
-
 void ToDoList::actionRemoveTriggered() {
-    QMessageBox::information(this, "Remove", "Action Remove triggered");
+    std::unique_ptr<RemoveTaskDialog> removeTaskDialog = std::make_unique<RemoveTaskDialog>(ui->verticalLayout->count());
+    if (removeTaskDialog->exec() == QDialog::Accepted) {
+        QVBoxLayout* vMainLayout = qobject_cast<QVBoxLayout*>(ui->allNewTasksContents->layout());
+
+        QLayoutItem* child = vMainLayout->takeAt(0);
+
+        QWidget* widget = child->widget();
+        if (widget) {
+            delete widget;
+        }
+        if (child)
+            delete child;
+    }
 }
 
 void ToDoList::actionMyDayTriggered() {
