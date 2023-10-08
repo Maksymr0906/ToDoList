@@ -11,6 +11,7 @@
 #include "EditTaskDialog.hpp"
 #include "RemoveTaskDialog.hpp"
 #include "TaskFrame.hpp"
+#include "TasksTableView.hpp"
 
 class ToDoList : public QMainWindow
 {
@@ -21,12 +22,13 @@ public:
     ~ToDoList();
 private:
     Ui::ToDoListClass *ui;
-    void refreshTasks(const QString& queryCondition, TASK_TYPE taskType);
     void refreshTitle(TASK_TYPE taskType);
     void refreshTitleText(TASK_TYPE taskType);
     void refreshTitleIcon(TASK_TYPE taskType);
-    void clearTaskWidgets();
+
     DateValidator *dateValidator;
+    QSqlTableModel* mainModel;
+    TasksTableView* tableView;
 private slots:
     void refreshBtnClicked();
     void actionAddTriggered();

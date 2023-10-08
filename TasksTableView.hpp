@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QtCore>
+#include <QtWidgets>
 
 class TasksTableView : public QWidget {
 	Q_OBJECT
@@ -10,4 +11,5 @@ public:
 	TasksTableView(QAbstractItemModel* model, QWidget* parent = nullptr);
 private:
 protected:
+	QTableView* mainView;
 };

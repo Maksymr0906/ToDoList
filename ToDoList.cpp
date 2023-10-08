@@ -16,6 +16,16 @@ ToDoList::ToDoList(QWidget *parent)
     if(!db.open())
         QMessageBox::critical(this, "Error", "Error opening database");
 
+    mainModel = new QSqlTableModel(this);
+    mainModel->setTable("todolist");
+    mainModel->select();
+
+    tableView = new TasksTableView(mainModel, this);
+
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->addWidget(tableView);
+    ui->listTasksFrame->setLayout(layout);
+
     // connects
     connect(ui->actionAdd, &QAction::triggered, this, &ToDoList::actionAddTriggered);
     connect(ui->addTaskButton, SIGNAL(clicked()), this, SLOT(actionAddTriggered()));
@@ -28,25 +38,10 @@ ToDoList::ToDoList(QWidget *parent)
     connect(ui->actionCompleted, &QAction::triggered, this, &ToDoList::actionCompletedTriggered);
     connect(ui->actionFailed, &QAction::triggered, this, &ToDoList::actionFailedTriggered);
     connect(ui->actionAboutProgram, &QAction::triggered, this, &ToDoList::actionAboutProgramTriggered);
-    connect(ui->refreshBtn, SIGNAL(clicked()), this, SLOT(refreshBtnClicked()));
-
-    refreshTasks("SELECT * FROM todolist WHERE is_my_day;", TASK_TYPE::MY_DAY);
 }
 
 ToDoList::~ToDoList() {
     delete ui;
-}
-
-void ToDoList::refreshBtnClicked() {
-    refreshTasks("SELECT * FROM todolist;", TASK_TYPE::ALL);
-    ui->refreshBtn->setEnabled(false);
-    ui->refreshBtn->setVisible(false);
-    ui->actionAll->setEnabled(true);
-    ui->actionCompleted->setEnabled(true);
-    ui->actionImportant->setEnabled(true);
-    ui->actionFailed->setEnabled(true);
-    ui->actionPlanned->setEnabled(true);
-    ui->actionMyDay->setEnabled(true);
 }
 
 void ToDoList::actionAddTriggered() {
@@ -67,95 +62,39 @@ void ToDoList::actionAddTriggered() {
             QMessageBox::critical(this, tr("Error"), tr("Adding task error"));
             return;
         }
-
-        refreshTasks("SELECT * FROM todolist;", TASK_TYPE::ALL);
     }
 }
 
 void ToDoList::actionRemoveTriggered() {
-    std::unique_ptr<RemoveTaskDialog> removeTaskDialog = std::make_unique<RemoveTaskDialog>(ui->verticalLayout->count());
-    if (removeTaskDialog->exec() == QDialog::Accepted) {
-        QVBoxLayout* vMainLayout = qobject_cast<QVBoxLayout*>(ui->allNewTasksContents->layout());
-
-        QLayoutItem* child = vMainLayout->takeAt(0);
-
-        QWidget* widget = child->widget();
-        if (widget) {
-            delete widget;
-        }
-        if (child)
-            delete child;
-    }
+    
 }
 
 void ToDoList::actionMyDayTriggered() {
-    refreshTasks("SELECT * FROM todolist WHERE is_my_day;", TASK_TYPE::MY_DAY);
+   
 }
 
 void ToDoList::actionImportantTriggered() {
-    refreshTasks("SELECT * FROM todolist WHERE is_important;", TASK_TYPE::IMPORTANT);
+
 }
 
 void ToDoList::actionAllTriggered() {
-    refreshTasks("SELECT * FROM todolist;", TASK_TYPE::ALL);
+    
 }
 
 void ToDoList::actionPlannedTriggered() {
-    refreshTasks("SELECT * FROM todolist WHERE deadline IS NOT NULL;", TASK_TYPE::PLANNED);
+    
 }
 
 void ToDoList::actionCompletedTriggered() {
-    refreshTasks("SELECT * FROM todolist WHERE status = 1;", TASK_TYPE::COMPLETED);
+    
 }
 
 void ToDoList::actionFailedTriggered() {
-    refreshTasks("SELECT * FROM todolist WHERE status = 2;", TASK_TYPE::FAILED);
+    
 }
 
 void ToDoList::actionAboutProgramTriggered() {
     QMessageBox::information(this, "About Program", "Action About Program triggered");
-}
-
-void ToDoList::clearTaskWidgets() {
-    QVBoxLayout* vMainLayout = qobject_cast<QVBoxLayout*>(ui->allNewTasksContents->layout());
-
-    QLayoutItem* child;
-    while ((child = vMainLayout->takeAt(0)) != nullptr) {
-        QWidget* widget = child->widget();
-        if (widget) {
-            delete widget;
-        }
-        if(child)
-            delete child;
-    }
-
-    QSpacerItem* verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    ui->verticalLayout->addSpacerItem(verticalSpacer);
-}
-
-void ToDoList::refreshTasks(const QString &queryCondition, TASK_TYPE taskType) {
-    refreshTitle(taskType);
-
-    QSqlQuery selectQuery;
-    if(!selectQuery.exec(queryCondition)) {
-        QMessageBox::critical(this, "Error making an querry", "Error making an querry");
-        return;
-    }
-
-    clearTaskWidgets();
-    
-    while(selectQuery.next()) {
-        Task task;
-        task.taskName = selectQuery.value("task_name").toString();
-        task.deadline = selectQuery.value("deadline").toString();
-        task.status = static_cast<STATUS>(selectQuery.value("status").toInt());
-        task.isMyDay = selectQuery.value("is_my_day").toBool();
-        task.isImportant = selectQuery.value("is_important").toBool();
-
-        TaskFrame* newTaskFrame = new TaskFrame(task);
-        newTaskFrame->setTitleLabelText(tr("Task #%1").arg(ui->verticalLayout->count()));
-        ui->verticalLayout->insertWidget(0, newTaskFrame);
-    }
 }
 
 void ToDoList::refreshTitle(TASK_TYPE taskType) {
