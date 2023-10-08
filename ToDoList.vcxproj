@@ -96,6 +96,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="taskTable.hpp" />
     <QtMoc Include="TaskFrame.hpp" />
     <QtMoc Include="DateValidator.hpp" />
     <QtMoc Include="NewTaskDialog.hpp" />
