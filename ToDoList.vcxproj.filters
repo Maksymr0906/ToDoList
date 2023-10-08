@@ -54,7 +54,7 @@
     <ClInclude Include="Task.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="taskTable.hpp">
+    <ClInclude Include="TaskTableView.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
