@@ -54,6 +54,7 @@ private:
     void createAddNewTaskFrame();
     void createCentralWidget();
     QAction* createAction(const QString& text, const QString& iconPath);
+    void refreshTasks();
 private slots:
     void actionAddTriggered();
     void actionRemoveTriggered();

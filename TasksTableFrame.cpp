@@ -12,3 +12,11 @@ TasksTableFrame::TasksTableFrame(QAbstractItemModel* model, QWidget* parent)
 	mainLayout->addWidget(mainView);
 
 }
+
+void TasksTableFrame::setFilter(const QString pattern, int column) {
+	mainView->setFilter(pattern, column);
+}
+
+void TasksTableFrame::resetFilter() {
+	mainView->resetFilter();
+}

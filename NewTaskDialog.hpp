@@ -23,6 +23,8 @@ public:
     }
 
     QString getTaskName() const { return ui->taskNameLineEdit->text(); }
+    QString getEmail() const { return ui->emailLineEdit->text(); }
+    QString getResponsible() const { return ui->responsibleLineEdit->text(); }
     QString getDeadline() const { return ui->deadlineLineEdit->text(); }
     bool getIsImportant() const { return ui->isImportantCheckBox->isChecked(); }
     bool getIsMyDay() const { return ui->isMyDayCheckBox->isChecked(); }

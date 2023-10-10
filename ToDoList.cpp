@@ -162,13 +162,15 @@ QAction* ToDoList::createAction(const QString& text, const QString& iconPath) {
 void ToDoList::actionAddTriggered() {
     const int IN_PROCESS = 0;
     std::unique_ptr<NewTaskDialog> newTaskDialog = std::make_unique<NewTaskDialog>(dateValidator);
-    newTaskDialog->setFixedSize(317, 255);
+    newTaskDialog->setFixedSize(462, 434);
     if(newTaskDialog->exec() == QDialog::Accepted) {
         QSqlQuery insertQuery;
-        QString insertQueryString = "insert into todolist(task_name, deadline, status, is_important, is_my_day)"
-            "values('%1', '%2', '%3', '%4', '%5');";
+        QString insertQueryString = "insert into todolist(task_name, deadline, responsible, email, status, is_important, is_my_day)"
+            "values('%1', '%2', '%3', '%4', '%5', '%6', '%7');";
         bool insertResult = insertQuery.exec(insertQueryString.arg(newTaskDialog->getTaskName())
                                              .arg(newTaskDialog->getDeadline())
+                                             .arg(newTaskDialog->getResponsible())
+                                             .arg(newTaskDialog->getEmail())
                                              .arg(IN_PROCESS)
                                              .arg(newTaskDialog->getIsImportant())
                                              .arg(newTaskDialog->getIsMyDay())
@@ -177,35 +179,44 @@ void ToDoList::actionAddTriggered() {
             QMessageBox::critical(this, tr("Error"), tr("Adding task error"));
             return;
         }
+
+        refreshTasks();
     }
 }
 
 void ToDoList::actionRemoveTriggered() {
+    QModelIndex selectedRowIndex = tasksTableFrame->getSelectionModel()->selectedRows().at(0);
     
 }
 
 void ToDoList::actionMyDayTriggered() {
     refreshTitle(TASK_TYPE::MY_DAY);
+    tasksTableFrame->setFilter("true", 6);
 }
 
 void ToDoList::actionImportantTriggered() {
     refreshTitle(TASK_TYPE::IMPORTANT);
+    tasksTableFrame->setFilter("true", 5);
 }
 
 void ToDoList::actionAllTriggered() {
     refreshTitle(TASK_TYPE::ALL);
+    tasksTableFrame->resetFilter();
 }
 
 void ToDoList::actionPlannedTriggered() {
     refreshTitle(TASK_TYPE::PLANNED);
+    tasksTableFrame->setFilter("20", 1);
 }
 
 void ToDoList::actionCompletedTriggered() {
     refreshTitle(TASK_TYPE::COMPLETED);
+    tasksTableFrame->setFilter("1", 4);
 }
 
 void ToDoList::actionFailedTriggered() {
     refreshTitle(TASK_TYPE::FAILED);
+    tasksTableFrame->setFilter("2", 4);
 }
 
 void ToDoList::actionAboutProgramTriggered() {
@@ -244,5 +255,27 @@ void ToDoList::refreshTitleIcon(TASK_TYPE taskType) {
 
     if(taskTypeToIcon.contains(taskType)) {
         titleImage->setPixmap(taskTypeToIcon.value(taskType));
+    }
+}
+
+void ToDoList::refreshTasks() {
+    QSqlQuery selectQuery;
+    if (!selectQuery.exec("SELECT * FROM todolist;")) {
+        QMessageBox::critical(this, "Error making a query", "Error making a query");
+        return;
+    }
+
+    while (selectQuery.next()) {
+        Task task;
+        task.taskName = selectQuery.value("task_name").toString();
+        task.deadline = selectQuery.value("deadline").toString();
+        task.responsible = selectQuery.value("responsible").toString();
+        task.email = selectQuery.value("email").toString();
+        task.status = static_cast<STATUS>(selectQuery.value("status").toInt());
+        task.isMyDay = selectQuery.value("is_my_day").toBool();
+        task.isImportant = selectQuery.value("is_important").toBool();
+
+
+        mainModel->select();
     }
 }

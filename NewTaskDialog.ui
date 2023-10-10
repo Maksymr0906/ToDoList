@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>317</width>
+    <width>462</width>
     <height>434</height>
    </rect>
   </property>
@@ -15,48 +15,21 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QFrame" name="texdEditsFrame">
+    <widget class="QFrame" name="textEditsFrame">
+     <property name="minimumSize">
+      <size>
+       <width>300</width>
+       <height>250</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLabel" name="taskNameLabel">
-        <property name="font">
-         <font>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Task Name</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="taskNameLineEdit">
-        <property name="font">
-         <font>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="deadlineLabel">
-        <property name="font">
-         <font>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Deadline</string>
-        </property>
-       </widget>
-      </item>
-      <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="5" column="0">
        <widget class="QLineEdit" name="deadlineLineEdit">
         <property name="font">
          <font>
@@ -65,7 +38,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="7" column="0">
        <widget class="QLabel" name="dateStateLabel">
         <property name="font">
          <font>
@@ -77,11 +50,92 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="taskNameLabel">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Task Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="emailLabel">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Email</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="responsibleLineEdit">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="taskNameLineEdit">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="deadlineLabel">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Deadline</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="responsibleLabel">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Responsible</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="emailLineEdit">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
    <item>
     <widget class="QFrame" name="checkBoxesFrame">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>150</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -91,6 +145,11 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QCheckBox" name="isImportantCheckBox">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Add to Important view</string>
         </property>
@@ -98,6 +157,11 @@
       </item>
       <item>
        <widget class="QCheckBox" name="isMyDayCheckBox">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Add to My Day view</string>
         </property>

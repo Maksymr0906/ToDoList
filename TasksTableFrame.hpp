@@ -14,5 +14,10 @@ protected:
 public:
 	TasksTableFrame(QWidget* parent = nullptr);
 	TasksTableFrame(QAbstractItemModel* model, QWidget* parent = nullptr);
+	void setFilter(const QString pattern, int column);
+	void resetFilter();
+	QItemSelectionModel* getSelectionModel() const {
+		return mainView->getSelectionModel();
+	}
 };
 
