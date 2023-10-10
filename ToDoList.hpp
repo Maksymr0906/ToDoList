@@ -22,7 +22,6 @@ public:
 protected:
     DateValidator* dateValidator;
     QSqlTableModel* mainModel;
-    
     QToolBar* toolBar;
     QAction* actionAll;
     QAction* actionCompleted;
@@ -48,6 +47,13 @@ private:
     void refreshTitle(TASK_TYPE taskType);
     void refreshTitleText(TASK_TYPE taskType);
     void refreshTitleIcon(TASK_TYPE taskType);
+    void createToolBar();
+    void createMenuBar();
+    void createTitleFrame();
+    void createTasksTableFrame();
+    void createAddNewTaskFrame();
+    void createCentralWidget();
+    QAction* createAction(const QString& text, const QString& iconPath);
 private slots:
     void actionAddTriggered();
     void actionRemoveTriggered();
