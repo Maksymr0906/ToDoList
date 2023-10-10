@@ -6,12 +6,11 @@
 #include <QMap>
 #include <QMainWindow>
 
-#include "ui_ToDoList.h"
 #include "NewTaskDialog.hpp"
 #include "EditTaskDialog.hpp"
 #include "RemoveTaskDialog.hpp"
 #include "TaskFrame.hpp"
-#include "TasksTableView.hpp"
+#include "TasksTableFrame.hpp"
 
 class ToDoList : public QMainWindow
 {
@@ -20,17 +19,36 @@ class ToDoList : public QMainWindow
 public:
     ToDoList(QWidget *parent = nullptr);
     ~ToDoList();
+protected:
+    DateValidator* dateValidator;
+    QSqlTableModel* mainModel;
+    
+    QToolBar* toolBar;
+    QAction* actionAll;
+    QAction* actionCompleted;
+    QAction* actionFailed;
+    QAction* actionImportant;
+    QAction* actionMyDay;
+    QAction* actionPlanned;
+    QMenuBar* menuBar;
+    QMenu* menuSettings;
+    QAction* actionAboutProgram;
+    QMenu* menuLanguage;
+    QAction* actionEnglish;
+    QAction* actionUkrainian;
+    QWidget* centralWidget;
+    QFrame* addNewTaskFrame;
+    QPushButton* addTaskButton;
+    QPushButton* removeTaskButton;
+    QFrame* titleFrame;
+    QLabel* titleImage;
+    QLabel* titleText;
+    TasksTableFrame* tasksTableFrame;
 private:
-    Ui::ToDoListClass *ui;
     void refreshTitle(TASK_TYPE taskType);
     void refreshTitleText(TASK_TYPE taskType);
     void refreshTitleIcon(TASK_TYPE taskType);
-
-    DateValidator *dateValidator;
-    QSqlTableModel* mainModel;
-    TasksTableView* tableView;
 private slots:
-    void refreshBtnClicked();
     void actionAddTriggered();
     void actionRemoveTriggered();
     void actionMyDayTriggered();

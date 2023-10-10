@@ -104,22 +104,6 @@
      </item>
     </layout>
    </widget>
-   <widget class="QFrame" name="listTasksFrame">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>69</y>
-      <width>771</width>
-      <height>451</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
    <widget class="QFrame" name="addNewTaskFrame">
     <property name="geometry">
      <rect>
@@ -215,6 +199,16 @@ border: none;</string>
       </spacer>
      </item>
     </layout>
+   </widget>
+   <widget class="QWidget" name="mainWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>731</width>
+      <height>441</height>
+     </rect>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

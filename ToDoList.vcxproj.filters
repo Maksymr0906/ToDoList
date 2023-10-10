@@ -52,6 +52,9 @@
     <ClCompile Include="TasksTableView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TasksTableFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task.hpp">
@@ -86,6 +89,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="TasksTableView.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TasksTableFrame.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

@@ -2,11 +2,8 @@
 
 ToDoList::ToDoList(QWidget *parent)
     : QMainWindow(parent),
-      ui(new Ui::ToDoListClass),
       dateValidator{ new DateValidator(this) } {
-    ui->setupUi(this);
-    ui->refreshBtn->setVisible(false);
-    ui->refreshBtn->setEnabled(false);
+    this->setWindowIcon(QIcon("Assets/program_icon.png"));
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("localhost");
     db.setDatabaseName("todolist");
@@ -15,33 +12,126 @@ ToDoList::ToDoList(QWidget *parent)
 
     if(!db.open())
         QMessageBox::critical(this, "Error", "Error opening database");
-
+    
     mainModel = new QSqlTableModel(this);
     mainModel->setTable("todolist");
     mainModel->select();
 
-    tableView = new TasksTableView(mainModel, this);
+    //Tool bar
+    actionAll = new QAction(this);
+    actionAll->setIcon(QIcon("Assets/all_icon.png"));
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->addWidget(tableView);
-    ui->listTasksFrame->setLayout(layout);
+    actionCompleted = new QAction(this);
+    actionCompleted->setIcon(QIcon("Assets/done_icon.png"));
 
-    // connects
-    connect(ui->actionAdd, &QAction::triggered, this, &ToDoList::actionAddTriggered);
-    connect(ui->addTaskButton, SIGNAL(clicked()), this, SLOT(actionAddTriggered()));
-    connect(ui->actionRemove, &QAction::triggered, this, &ToDoList::actionRemoveTriggered);
-    connect(ui->removeTaskButton, SIGNAL(clicked()), this, SLOT(actionRemoveTriggered()));
-    connect(ui->actionMyDay, &QAction::triggered, this, &ToDoList::actionMyDayTriggered);
-    connect(ui->actionImportant, &QAction::triggered, this, &ToDoList::actionImportantTriggered);
-    connect(ui->actionAll, &QAction::triggered, this, &ToDoList::actionAllTriggered);
-    connect(ui->actionPlanned, &QAction::triggered, this, &ToDoList::actionPlannedTriggered);
-    connect(ui->actionCompleted, &QAction::triggered, this, &ToDoList::actionCompletedTriggered);
-    connect(ui->actionFailed, &QAction::triggered, this, &ToDoList::actionFailedTriggered);
-    connect(ui->actionAboutProgram, &QAction::triggered, this, &ToDoList::actionAboutProgramTriggered);
+    actionFailed = new QAction(this);
+    actionFailed->setIcon(QIcon("Assets/failed_icon.png"));
+
+    actionImportant = new QAction(this);
+    actionImportant->setIcon(QIcon("Assets/important_icon.png"));
+
+    actionMyDay = new QAction(this);
+    actionMyDay->setIcon(QIcon("Assets/myday_icon.png"));
+
+    actionPlanned = new QAction(this);
+    actionPlanned->setIcon(QIcon("Assets/planned_icon.png"));
+
+    toolBar = new QToolBar("Tasks", this);
+    toolBar->addAction(actionMyDay);
+    toolBar->addAction(actionImportant);
+    toolBar->addAction(actionAll);
+    toolBar->addAction(actionPlanned);
+    toolBar->addAction(actionCompleted);
+    toolBar->addAction(actionFailed);
+
+    this->addToolBar(Qt::LeftToolBarArea, toolBar);
+
+    //Menu bar
+    menuBar = new QMenuBar(this);
+
+    menuSettings = new QMenu("Settings", this);
+    actionAboutProgram = new QAction("About program", this);
+    menuSettings->addAction(actionAboutProgram);
+
+    menuLanguage = new QMenu("Language", this);
+    actionEnglish = new QAction("English", this);
+    actionUkrainian = new QAction("Ukrainian", this);
+
+    menuLanguage->addAction(actionEnglish);
+    menuLanguage->addAction(actionUkrainian);
+
+    menuSettings->addMenu(menuLanguage);
+    menuBar->addMenu(menuSettings);
+
+    this->setMenuBar(menuBar);
+
+
+    centralWidget = new QWidget(this);
+    
+    //Title frame
+
+    titleFrame = new QFrame(this);
+    titleImage = new QLabel(this);
+    titleImage->setPixmap(QString("Assets/myday_icon.png"));
+    titleImage->setMaximumSize(QSize(40, 40));
+    titleImage->setScaledContents(true);
+    titleText = new QLabel("My Day", this);
+    titleText->setStyleSheet("font-family: Segoe UI; font-size: 18px; font-weight: bold;");
+    QHBoxLayout* titleLayout = new QHBoxLayout(titleFrame);
+    QSpacerItem* spacer = new QSpacerItem(100, 100, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    titleLayout->addSpacerItem(spacer);
+    titleLayout->addWidget(titleText);
+    titleLayout->addWidget(titleImage);
+    titleFrame->setLayout(titleLayout);
+    titleFrame->setFixedHeight(60);
+    //Tasks Table Frame
+    tasksTableFrame = new TasksTableFrame(mainModel);
+    tasksTableFrame->setFixedSize(QSize(750, 400));
+    //Add New Task Frame
+
+    addNewTaskFrame = new QFrame(this);
+    addTaskButton = new QPushButton(this);
+    addTaskButton->setIcon(QIcon("Assets/add_icon.png"));
+    addTaskButton->setStyleSheet("background-color: transparent; border: none;");
+    addTaskButton->setIconSize(QSize(40, 40));
+    removeTaskButton = new QPushButton(this);
+    removeTaskButton->setIcon(QIcon("Assets/remove_icon.png"));
+    removeTaskButton->setStyleSheet("background-color: transparent; border: none;");
+    removeTaskButton->setIconSize(QSize(40, 40));
+
+    QHBoxLayout* addNewTaskLayout = new QHBoxLayout();
+    addNewTaskLayout->addSpacerItem(spacer);
+    addNewTaskLayout->addWidget(addTaskButton);
+    addNewTaskLayout->addWidget(removeTaskButton);
+    addNewTaskLayout->addSpacerItem(spacer);
+
+    addNewTaskFrame->setLayout(addNewTaskLayout);
+    addNewTaskFrame->setFixedHeight(80);
+
+    QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
+
+    mainLayout->addWidget(titleFrame);
+    mainLayout->addWidget(tasksTableFrame);
+    mainLayout->addWidget(addNewTaskFrame);
+
+    centralWidget->setLayout(mainLayout);
+    setCentralWidget(centralWidget);
+
+    // Connects
+    connect(addTaskButton, SIGNAL(clicked()), this, SLOT(actionAddTriggered()));
+    connect(removeTaskButton, SIGNAL(clicked()), this, SLOT(actionRemoveTriggered()));
+    connect(actionMyDay, &QAction::triggered, this, &ToDoList::actionMyDayTriggered);
+    connect(actionImportant, &QAction::triggered, this, &ToDoList::actionImportantTriggered);
+    connect(actionAll, &QAction::triggered, this, &ToDoList::actionAllTriggered);
+    connect(actionPlanned, &QAction::triggered, this, &ToDoList::actionPlannedTriggered);
+    connect(actionCompleted, &QAction::triggered, this, &ToDoList::actionCompletedTriggered);
+    connect(actionFailed, &QAction::triggered, this, &ToDoList::actionFailedTriggered);
+    connect(actionAboutProgram, &QAction::triggered, this, &ToDoList::actionAboutProgramTriggered);
 }
 
 ToDoList::~ToDoList() {
-    delete ui;
+    delete dateValidator;
+    delete mainModel;
 }
 
 void ToDoList::actionAddTriggered() {
@@ -113,7 +203,7 @@ void ToDoList::refreshTitleText(TASK_TYPE taskType) {
     };
 
     if(taskTypeTotitleText.contains(taskType)) {
-        ui->titleText->setText(taskTypeTotitleText.value(taskType));
+        titleText->setText(taskTypeTotitleText.value(taskType));
     }
 }
 
@@ -128,6 +218,6 @@ void ToDoList::refreshTitleIcon(TASK_TYPE taskType) {
     };
 
     if(taskTypeToIcon.contains(taskType)) {
-        ui->titleImage->setPixmap(taskTypeToIcon.value(taskType));
+        titleImage->setPixmap(taskTypeToIcon.value(taskType));
     }
 }
