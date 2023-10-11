@@ -29,6 +29,7 @@ ToDoList::ToDoList(QWidget *parent)
     createAddNewTaskFrame();
     createCentralWidget();
     setCentralWidget(centralWidget);
+    removeTaskButton->setEnabled(false);
 
     // Connects
     connect(addTaskButton, SIGNAL(clicked()), this, SLOT(actionAddTriggered()));
@@ -40,6 +41,7 @@ ToDoList::ToDoList(QWidget *parent)
     connect(actionCompleted, &QAction::triggered, this, &ToDoList::actionCompletedTriggered);
     connect(actionFailed, &QAction::triggered, this, &ToDoList::actionFailedTriggered);
     connect(actionAboutProgram, &QAction::triggered, this, &ToDoList::actionAboutProgramTriggered);
+    connect(tasksTableFrame->getView()->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ToDoList::updateRemoveButtonState);
 }
 
 ToDoList::~ToDoList() {
@@ -118,6 +120,7 @@ void ToDoList::createTitleFrame() {
 void ToDoList::createTasksTableFrame() {
     tasksTableFrame = new TasksTableFrame(mainModel);
     tasksTableFrame->setFixedSize(QSize(750, 400));
+    tasksTableFrame->setFilter("true", 6);
 }
 
 void ToDoList::createAddNewTaskFrame() {
@@ -187,6 +190,7 @@ void ToDoList::actionAddTriggered() {
 void ToDoList::actionRemoveTriggered() {
     QModelIndex selectedRowIndex = tasksTableFrame->getSelectionModel()->selectedRows().at(0);
     QSortFilterProxyModel* sortedModel = tasksTableFrame->getSortedModel();
+
     Task task;
     task.taskName = sortedModel->data(selectedRowIndex).toString();
     task.deadline = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 1)).toString();
@@ -195,6 +199,7 @@ void ToDoList::actionRemoveTriggered() {
     task.status = static_cast<STATUS>(sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 4)).toInt());
     task.isImportant = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 5)).toBool();
     task.isMyDay = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 6)).toBool();
+    
     QSqlQuery deleteQuery;
     QString deleteQueryString = "DELETE FROM todolist WHERE "
         "%1 AND %2 AND %3 AND %4 AND status = %5 AND is_important = '%6' AND is_my_day = '%7'";
@@ -219,6 +224,16 @@ void ToDoList::actionRemoveTriggered() {
     }
 
     refreshTasks();
+    removeTaskButton->setEnabled(false);
+}
+
+void ToDoList::updateRemoveButtonState() {
+    if (tasksTableFrame->getView()->selectionModel()->hasSelection()) {
+        removeTaskButton->setEnabled(true);
+    }
+    else {
+        removeTaskButton->setEnabled(false);
+    }
 }
 
 void ToDoList::actionMyDayTriggered() {
@@ -306,8 +321,7 @@ void ToDoList::refreshTasks() {
         task.status = static_cast<STATUS>(selectQuery.value("status").toInt());
         task.isMyDay = selectQuery.value("is_my_day").toBool();
         task.isImportant = selectQuery.value("is_important").toBool();
-
-
-        mainModel->select();
     }
+
+    mainModel->select();
 }

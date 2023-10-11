@@ -20,6 +20,6 @@ public:
 		return mainView->getSelectionModel();
 	}
 	QSortFilterProxyModel* getSortedModel() const { return mainView->getSortedModel(); }
-
+	QTableView* getView() const { return mainView->getView(); }
 };
 

@@ -15,6 +15,7 @@ public:
 	void resetFilter();
 	QItemSelectionModel* getSelectionModel() const { return mainView->selectionModel(); }
 	QSortFilterProxyModel* getSortedModel() const { return sortedModel; }
+	QTableView* getView() const { return mainView; }
 private:
 protected:
 	QSortFilterProxyModel* sortedModel;

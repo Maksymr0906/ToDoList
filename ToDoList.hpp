@@ -65,4 +65,5 @@ private slots:
     void actionCompletedTriggered();
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
+    void updateRemoveButtonState();
 };
