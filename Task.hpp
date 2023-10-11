@@ -39,6 +39,8 @@ struct Task {
 		if (status == STATUS::FAILED) {
 			return "Failed";
 		}
+		
+		return "";
 	}
 };
 

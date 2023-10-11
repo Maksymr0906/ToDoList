@@ -58,7 +58,6 @@ ToDoList::~ToDoList() {
     delete menuLanguage;
     delete actionEnglish;
     delete actionUkrainian;
-    delete centralWidget;
     delete addNewTaskFrame;
     delete addTaskButton;
     delete removeTaskButton;
@@ -66,6 +65,7 @@ ToDoList::~ToDoList() {
     delete titleImage;
     delete titleText;
     delete tasksTableFrame;
+    delete centralWidget;
 }
 
 void ToDoList::createToolBar() {
@@ -186,7 +186,39 @@ void ToDoList::actionAddTriggered() {
 
 void ToDoList::actionRemoveTriggered() {
     QModelIndex selectedRowIndex = tasksTableFrame->getSelectionModel()->selectedRows().at(0);
-    
+    QSortFilterProxyModel* sortedModel = tasksTableFrame->getSortedModel();
+    Task task;
+    task.taskName = sortedModel->data(selectedRowIndex).toString();
+    task.deadline = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 1)).toString();
+    task.responsible = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 2)).toString();
+    task.email = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 3)).toString();
+    task.status = static_cast<STATUS>(sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 4)).toInt());
+    task.isImportant = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 5)).toBool();
+    task.isMyDay = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 6)).toBool();
+    QSqlQuery deleteQuery;
+    QString deleteQueryString = "DELETE FROM todolist WHERE "
+        "%1 AND %2 AND %3 AND %4 AND status = %5 AND is_important = '%6' AND is_my_day = '%7'";
+
+    QString taskNameCondition = task.taskName.isEmpty() ? "task_name IS NULL" : "task_name = '" + task.taskName + "'";
+    QString deadlineCondition = task.deadline.isEmpty() ? "deadline IS NULL" : "deadline = '" + task.deadline + "'";
+    QString responsibleCondition = task.responsible.isEmpty() ? "responsible IS NULL" : "responsible = '" + task.responsible + "'";
+    QString emailCondition = task.email.isEmpty() ? "email IS NULL" : "email = '" + task.email + "'";
+
+    bool insertResult = deleteQuery.exec(deleteQueryString.arg(taskNameCondition)
+        .arg(deadlineCondition)
+        .arg(responsibleCondition)
+        .arg(emailCondition)
+        .arg(static_cast<int>(task.status))
+        .arg(task.isImportant)
+        .arg(task.isMyDay)
+    );
+
+    if (!insertResult) {
+        QMessageBox::critical(this, tr("Error"), tr("Deleting task error"));
+        return;
+    }
+
+    refreshTasks();
 }
 
 void ToDoList::actionMyDayTriggered() {
