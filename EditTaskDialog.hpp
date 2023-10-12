@@ -22,11 +22,12 @@ public:
 
         connect(dateValidator, &DateValidator::invalidDateSignal, this, &EditTaskDialog::invalidDateSlot);
         connect(dateValidator, &DateValidator::validDateSignal, this, &EditTaskDialog::validDateSlot);
-        connect(ui->removeButton, &QPushButton::clicked, this, &EditTaskDialog::removeButtonClicked);
     }
 
     QString getTaskName() const { return ui->taskNameLineEdit->text(); }
     QString getDeadline() const { return ui->deadlineLineEdit->text(); }
+    QString getResponsible() const { return ui->responsibleLineEdit->text(); }
+    QString getEmail() const { return ui->emailLineEdit->text(); }
     bool getIsImportant() const { return ui->isImportantCheckBox->isChecked(); }
     bool getIsMyDay() const { return ui->isMyDayCheckBox->isChecked(); }
     int getStatus() const {
@@ -41,6 +42,8 @@ public:
     void setStatus(QString status) { ui->statusLabel->setText("Status: " + status); }
     void setTaskName(QString taskName) { ui->taskNameLineEdit->setText(taskName); }
     void setDeadline(QString deadline) { ui->deadlineLineEdit->setText(deadline); }
+    void setResponsible(QString responsible) { ui->responsibleLineEdit->setText(responsible); }
+    void setEmail(QString email) { ui->emailLineEdit->setText(email); }
     void setIsMyDay(bool isMyDay) { ui->isMyDayCheckBox->setChecked(isMyDay); }
     void setIsImportant(bool isImportant) { ui->isImportantCheckBox->setChecked(isImportant); }
 
@@ -55,22 +58,5 @@ public slots:
         ui->okButton->setDisabled(false);
         ui->dateStateLabel->setText(tr("Valid"));
         ui->dateStateLabel->setStyleSheet("color: green; font-weight: bold;");
-    }
-
-    void removeButtonClicked() {
-        QSqlQuery deleteQuery;
-        QString deleteQueryString = "DELETE FROM todolist WHERE task_name = '%1' AND deadline = '%2' AND status = '%3' AND is_important = '%4' AND is_my_day = '%5';";
-        bool deleteResult = deleteQuery.exec(deleteQueryString.arg(this->getTaskName())
-            .arg(this->getDeadline())
-            .arg(this->getStatus())
-            .arg(this->getIsImportant())
-            .arg(this->getIsMyDay())
-        );
-        if (!deleteResult) {
-            QMessageBox::critical(this, tr("Error"), tr("Deleting task error"));
-            return;
-        }
-        
-        this->close();
     }
 };

@@ -39,6 +39,7 @@ protected:
     QFrame* addNewTaskFrame;
     QPushButton* addTaskButton;
     QPushButton* removeTaskButton;
+    QPushButton* editTaskButton;
     QFrame* titleFrame;
     QLabel* titleImage;
     QLabel* titleText;
@@ -57,6 +58,7 @@ private:
     void refreshTasks();
 private slots:
     void actionAddTriggered();
+    void actionEditTriggered();
     void actionRemoveTriggered();
     void actionMyDayTriggered();
     void actionImportantTriggered();
@@ -66,4 +68,5 @@ private slots:
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
     void updateRemoveButtonState();
+    void updateEditButtonState();
 };
