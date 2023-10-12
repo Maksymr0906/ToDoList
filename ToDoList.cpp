@@ -175,18 +175,20 @@ void ToDoList::actionAddTriggered() {
     newTaskDialog->setFixedSize(462, 434);
     if(newTaskDialog->exec() == QDialog::Accepted) {
         QSqlQuery insertQuery;
-        QString insertQueryString = "insert into todolist(task_name, deadline, responsible, email, status, is_important, is_my_day)"
-            "values('%1', '%2', '%3', '%4', '%5', '%6', '%7');";
-        bool insertResult = insertQuery.exec(insertQueryString.arg(newTaskDialog->getTaskName())
-                                             .arg(newTaskDialog->getDeadline())
-                                             .arg(newTaskDialog->getResponsible())
-                                             .arg(newTaskDialog->getEmail())
-                                             .arg(IN_PROCESS)
-                                             .arg(newTaskDialog->getIsImportant())
-                                             .arg(newTaskDialog->getIsMyDay())
-        );
-        if(!insertResult) {
-            QMessageBox::critical(this, tr("Error"), tr("Adding task error"));
+        QString insertQueryString = "INSERT INTO todolist (task_name, deadline, responsible, email, status, is_important, is_my_day) "
+            "VALUES (:task_name, :deadline, :responsible, :email, :status, :is_important, :is_my_day);";
+
+        insertQuery.prepare(insertQueryString);
+        insertQuery.bindValue(":task_name", newTaskDialog->getTaskName());
+        insertQuery.bindValue(":deadline", newTaskDialog->getDeadline());
+        insertQuery.bindValue(":responsible", newTaskDialog->getResponsible());
+        insertQuery.bindValue(":email", newTaskDialog->getEmail());
+        insertQuery.bindValue(":status", IN_PROCESS);
+        insertQuery.bindValue(":is_important", newTaskDialog->getIsImportant());
+        insertQuery.bindValue(":is_my_day", newTaskDialog->getIsMyDay());
+
+        if (!insertQuery.exec()) {
+            QMessageBox::critical(this, tr("Error"), tr("Adding task error: %1").arg(insertQuery.lastError().text()));
             return;
         }
 
