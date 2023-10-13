@@ -35,6 +35,9 @@ protected:
     QMenu* menuLanguage;
     QAction* actionEnglish;
     QAction* actionUkrainian;
+    QMenu* menuTask;
+    QAction* actionMarkAsCompleted;
+    QAction* actionMarkAsFailed;
     QWidget* centralWidget;
     QFrame* addNewTaskFrame;
     QPushButton* addTaskButton;
@@ -57,6 +60,9 @@ private:
     QAction* createAction(const QString& text, const QString& iconPath);
     void refreshTasks();
 private slots:
+    void actionMarkAsCompletedTriggered();
+    void actionMarkAsFailedTriggered();
+    void markTask(STATUS newStatus, const QString& errorMessage);
     void actionAddTriggered();
     void actionEditTriggered();
     void actionRemoveTriggered();
@@ -67,6 +73,5 @@ private slots:
     void actionCompletedTriggered();
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
-    void updateRemoveButtonState();
-    void updateEditButtonState();
+    void updateButtonsState();
 };

@@ -42,8 +42,9 @@ ToDoList::ToDoList(QWidget *parent)
     connect(actionCompleted, &QAction::triggered, this, &ToDoList::actionCompletedTriggered);
     connect(actionFailed, &QAction::triggered, this, &ToDoList::actionFailedTriggered);
     connect(actionAboutProgram, &QAction::triggered, this, &ToDoList::actionAboutProgramTriggered);
-    connect(tasksTableFrame->getView()->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ToDoList::updateRemoveButtonState);
-    connect(tasksTableFrame->getView()->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ToDoList::updateEditButtonState);
+    connect(tasksTableFrame->getView()->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ToDoList::updateButtonsState);
+    connect(actionMarkAsCompleted, &QAction::triggered, this, &ToDoList::actionMarkAsCompletedTriggered);
+    connect(actionMarkAsFailed, &QAction::triggered, this, &ToDoList::actionMarkAsFailedTriggered);
 }
 
 ToDoList::~ToDoList() {
@@ -62,6 +63,9 @@ ToDoList::~ToDoList() {
     delete menuLanguage;
     delete actionEnglish;
     delete actionUkrainian;
+    delete menuTask;
+    delete actionMarkAsCompleted;
+    delete actionMarkAsFailed;
     delete addNewTaskFrame;
     delete addTaskButton;
     delete removeTaskButton;
@@ -99,7 +103,18 @@ void ToDoList::createMenuBar() {
     menuLanguage->addAction(actionUkrainian);
 
     menuSettings->addMenu(menuLanguage);
+
+    menuTask = new QMenu("Task", this);
+    actionMarkAsCompleted = new QAction("Mark as Completed", this);
+    actionMarkAsFailed = new QAction("Mark as Failed", this);
+    actionMarkAsCompleted->setEnabled(false);
+    actionMarkAsFailed->setEnabled(false);
+
+    menuTask->addAction(actionMarkAsCompleted);
+    menuTask->addAction(actionMarkAsFailed);
+
     menuBar->addMenu(menuSettings);
+    menuBar->addMenu(menuTask);
 }
 
 void ToDoList::createTitleFrame() {
@@ -300,21 +315,18 @@ void ToDoList::actionRemoveTriggered() {
     refreshTasks();
 }
 
-void ToDoList::updateRemoveButtonState() {
+void ToDoList::updateButtonsState() {
     if (tasksTableFrame->getView()->selectionModel()->hasSelection()) {
         removeTaskButton->setEnabled(true);
+        editTaskButton->setEnabled(true);
+        actionMarkAsCompleted->setEnabled(true);
+        actionMarkAsFailed->setEnabled(true);
     }
     else {
         removeTaskButton->setEnabled(false);
-    }
-}
-
-void ToDoList::updateEditButtonState() {
-    if (tasksTableFrame->getView()->selectionModel()->hasSelection()) {
-        editTaskButton->setEnabled(true);
-    }
-    else {
         editTaskButton->setEnabled(false);
+        actionMarkAsCompleted->setEnabled(false);
+        actionMarkAsFailed->setEnabled(false);
     }
 }
 
@@ -390,6 +402,8 @@ void ToDoList::refreshTitleIcon(TASK_TYPE taskType) {
 void ToDoList::refreshTasks() {
     editTaskButton->setEnabled(false);
     removeTaskButton->setEnabled(false);
+    actionMarkAsCompleted->setEnabled(false);
+    actionMarkAsFailed->setEnabled(false);
 
     QSqlQuery selectQuery;
     if (!selectQuery.exec("SELECT * FROM todolist;")) {
@@ -409,4 +423,53 @@ void ToDoList::refreshTasks() {
     }
 
     mainModel->select();
+}
+
+void ToDoList::actionMarkAsCompletedTriggered() {
+    markTask(STATUS::COMPLETED, "Choose the row to mark as completed");
+}
+
+void ToDoList::actionMarkAsFailedTriggered() {
+    markTask(STATUS::FAILED, "Choose the row to mark as failed");
+}
+
+void ToDoList::markTask(STATUS newStatus, const QString& errorMessage) {
+    if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
+        QMessageBox::information(this, "Error", "Choose the row at first");
+        return;
+    }
+
+    QModelIndex selectedRowIndex = tasksTableFrame->getSelectionModel()->selectedRows().at(0);
+    QSortFilterProxyModel* sortedModel = tasksTableFrame->getSortedModel();
+
+    Task task;
+    task.taskName = sortedModel->data(selectedRowIndex).toString();
+    task.deadline = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 1)).toString();
+    task.responsible = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 2)).toString();
+    task.email = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 3)).toString();
+    task.status = static_cast<STATUS>(sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 4)).toInt());
+    task.isImportant = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 5)).toBool();
+    task.isMyDay = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 6)).toBool();
+
+    QSqlQuery updateQuery;
+    QString updateQueryString = "UPDATE todolist "
+        "SET status = :new_status "
+        "WHERE task_name = :old_task_name AND deadline = :old_deadline AND status = :old_status AND is_important = :old_important AND is_my_day = :old_my_day;";
+
+    updateQuery.prepare(updateQueryString);
+    if (task.status != newStatus)
+        updateQuery.bindValue(":new_status", static_cast<int>(newStatus));
+    else
+        updateQuery.bindValue(":new_status", static_cast<int>(STATUS::IN_PROCESS));
+    updateQuery.bindValue(":old_task_name", task.taskName);
+    updateQuery.bindValue(":old_deadline", task.deadline);
+    updateQuery.bindValue(":old_status", static_cast<int>(task.status));
+    updateQuery.bindValue(":old_important", task.isImportant);
+    updateQuery.bindValue(":old_my_day", task.isMyDay);
+    if (!updateQuery.exec()) {
+        QMessageBox::critical(this, tr("Error"), tr("Updating task error: %1").arg(updateQuery.lastError().text()));
+        return;
+    }
+
+    refreshTasks();
 }
