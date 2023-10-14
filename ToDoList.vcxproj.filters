@@ -40,9 +40,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TaskDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TasksTableView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,9 +56,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="NewTaskDialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="TaskDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>

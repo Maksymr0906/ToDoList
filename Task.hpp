@@ -53,7 +53,7 @@ struct Task {
 		int year = deadlineString.mid(0, 4).toInt();
 		int month = deadlineString.mid(5, 2).toInt();
 		int day = deadlineString.mid(8, 2).toInt();
-		if (status != STATUS::COMPLETED) {
+		if (status == STATUS::IN_PROCESS) {
 			if (QDate::currentDate() <= QDate(year, month, day))
 				status = STATUS::IN_PROCESS;
 			else status = STATUS::FAILED;

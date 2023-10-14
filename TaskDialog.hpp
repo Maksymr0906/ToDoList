@@ -13,7 +13,7 @@
 
 class TaskDialog : public QDialog {
     Q_OBJECT
-private:
+protected:
     std::unique_ptr<Ui::TaskDialog> ui;
 
 public:
@@ -41,16 +41,7 @@ public:
     QString getEmail() const { return ui->emailLineEdit->text(); }
     bool getIsImportant() const { return ui->isImportantCheckBox->isChecked(); }
     bool getIsMyDay() const { return ui->isMyDayCheckBox->isChecked(); }
-    int getStatus() const {
-        if (ui->statusLabel->text() == "Status: In Process")
-            return static_cast<int>(STATUS::IN_PROCESS);
-        else if (ui->statusLabel->text() == "Status: Completed")
-            return static_cast<int>(STATUS::COMPLETED);
-        else 
-            return static_cast<int>(STATUS::FAILED);
-    }
 
-    void setStatus(QString status) { ui->statusLabel->setText("Status: " + status); }
     void setTaskName(QString taskName) { ui->taskNameLineEdit->setText(taskName); }
     void setDeadline(QString deadline) { ui->deadlineLineEdit->setText(deadline); }
     void setResponsible(QString responsible) { ui->responsibleLineEdit->setText(responsible); }

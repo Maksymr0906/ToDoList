@@ -10,14 +10,14 @@ TasksTableView::TasksTableView(QAbstractItemModel* model, QWidget* parent) : Tas
     mainView->setModel(sortedModel);
     mainView->setFixedSize(QSize(730, 400));
     mainView->verticalHeader()->setVisible(false);
-    /*mainView->hideColumn(0);
+    mainView->hideColumn(0);
     mainView->hideColumn(5);
     mainView->hideColumn(6);
     mainView->hideColumn(7);
     mainView->setColumnWidth(1, 300);
     mainView->setColumnWidth(2, 100);
     mainView->setColumnWidth(3, 165);
-    mainView->setColumnWidth(4, 165);*/
+    mainView->setColumnWidth(4, 165);
     mainView->setSelectionBehavior(QAbstractItemView::SelectRows);
     mainView->setSelectionMode(QAbstractItemView::SingleSelection);
     mainView->setEditTriggers(QAbstractItemView::NoEditTriggers);

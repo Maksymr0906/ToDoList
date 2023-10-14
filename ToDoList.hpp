@@ -12,10 +12,6 @@
 class ToDoList : public QMainWindow
 {
     Q_OBJECT
-
-public:
-    ToDoList(QWidget *parent = nullptr);
-    ~ToDoList();
 protected:
     DateValidator* dateValidator;
     EmailValidator* emailValidator;
@@ -42,12 +38,12 @@ protected:
     QPushButton* removeTaskButton;
     QPushButton* editTaskButton;
     QFrame* titleFrame;
-    QPushButton* markAsCompletedButton;
-    QPushButton* markAsFailedButton;
+    QPushButton* completeTaskButton;
+    QPushButton* failTaskButton;
     QLabel* titleImage;
     QLabel* titleText;
     TasksTableFrame* tasksTableFrame;
-private:
+
     void refreshTitle(TASK_TYPE taskType);
     void refreshTitleText(TASK_TYPE taskType);
     void refreshTitleIcon(TASK_TYPE taskType);
@@ -60,13 +56,18 @@ private:
     QAction* createAction(const QString& text, const QString& iconPath);
     void refreshTasks();
     Task getSelectedTask();
-private slots:
-    void actionMarkAsCompletedTriggered();
-    void actionMarkAsFailedTriggered();
+protected slots:
+    void completeTaskButtonPressed();
+    void completeTaskButtonReleased();
+    void failTaskButtonPressed();
+    void failTaskButtonReleased();
     void markTask(STATUS newStatus, const QString& errorMessage);
-    void actionAddTriggered();
-    void actionEditTriggered();
-    void actionRemoveTriggered();
+    void addTaskButtonPressed();
+    void addTaskButtonReleased();
+    void editTaskButtonPressed();
+    void editTaskButtonReleased();
+    void removeTaskButtonPressed();
+    void removeTaskButtonReleased();
     void actionMyDayTriggered();
     void actionImportantTriggered();
     void actionAllTriggered();
@@ -75,4 +76,7 @@ private slots:
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
     void updateButtonsState();
+public:
+    ToDoList(QWidget *parent = nullptr);
+    ~ToDoList();
 };

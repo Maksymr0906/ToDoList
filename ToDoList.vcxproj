@@ -85,10 +85,8 @@
   <ItemGroup>
     <QtRcc Include="ToDoList.qrc" />
     <QtUic Include="TaskDialog.ui" />
-    <QtUic Include="NewTaskDialog.ui" />
     <QtUic Include="ToDoList.ui" />
     <QtMoc Include="ToDoList.hpp" />
-    <ClCompile Include="TaskDialog.cpp" />
     <ClCompile Include="EmailValidator.cpp" />
     <ClCompile Include="TasksTableFrame.cpp" />
     <ClCompile Include="TasksTableView.cpp" />

@@ -34,10 +34,12 @@ ToDoList::ToDoList(QWidget *parent)
     tasksTableFrame->setFilter("true", 7);
     refreshTasks();
 
-    // Connects
-    connect(addTaskButton, &QPushButton::clicked, this, &ToDoList::actionAddTriggered);
-    connect(editTaskButton, &QPushButton::clicked, this, &ToDoList::actionEditTriggered);
-    connect(removeTaskButton, &QPushButton::clicked, this, &ToDoList::actionRemoveTriggered);
+    connect(addTaskButton, &QPushButton::pressed, this, &ToDoList::addTaskButtonPressed);
+    connect(addTaskButton, &QPushButton::released, this, &ToDoList::addTaskButtonReleased);
+    connect(editTaskButton, &QPushButton::pressed, this, &ToDoList::editTaskButtonPressed);
+    connect(editTaskButton, &QPushButton::released, this, &ToDoList::editTaskButtonReleased);
+    connect(removeTaskButton, &QPushButton::pressed, this, &ToDoList::removeTaskButtonPressed);
+    connect(removeTaskButton, &QPushButton::released, this, &ToDoList::removeTaskButtonReleased);
     connect(actionMyDay, &QAction::triggered, this, &ToDoList::actionMyDayTriggered);
     connect(actionImportant, &QAction::triggered, this, &ToDoList::actionImportantTriggered);
     connect(actionAll, &QAction::triggered, this, &ToDoList::actionAllTriggered);
@@ -46,10 +48,12 @@ ToDoList::ToDoList(QWidget *parent)
     connect(actionFailed, &QAction::triggered, this, &ToDoList::actionFailedTriggered);
     connect(actionAboutProgram, &QAction::triggered, this, &ToDoList::actionAboutProgramTriggered);
     connect(tasksTableFrame->getView()->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ToDoList::updateButtonsState);
-    connect(actionMarkAsCompleted, &QAction::triggered, this, &ToDoList::actionMarkAsCompletedTriggered);
-    connect(actionMarkAsFailed, &QAction::triggered, this, &ToDoList::actionMarkAsFailedTriggered);
-    connect(markAsCompletedButton, &QPushButton::clicked, this, &ToDoList::actionMarkAsCompletedTriggered);
-    connect(markAsFailedButton, &QPushButton::clicked, this, &ToDoList::actionMarkAsFailedTriggered);
+    connect(actionMarkAsCompleted, &QAction::triggered, this, &ToDoList::completeTaskButtonPressed);
+    connect(actionMarkAsFailed, &QAction::triggered, this, &ToDoList::failTaskButtonPressed);
+    connect(completeTaskButton, &QPushButton::pressed, this, &ToDoList::completeTaskButtonPressed);
+    connect(completeTaskButton, &QPushButton::released, this, &ToDoList::completeTaskButtonReleased);
+    connect(failTaskButton, &QPushButton::pressed, this, &ToDoList::failTaskButtonPressed);
+    connect(failTaskButton, &QPushButton::released, this, &ToDoList::failTaskButtonReleased);
 }
 
 ToDoList::~ToDoList() {
@@ -105,8 +109,7 @@ void ToDoList::createMenuBar() {
     actionEnglish = new QAction("English", this);
     actionUkrainian = new QAction("Ukrainian", this);
 
-    menuLanguage->addAction(actionEnglish);
-    menuLanguage->addAction(actionUkrainian);
+    menuLanguage->addActions({ actionEnglish, actionUkrainian });
 
     menuSettings->addMenu(menuLanguage);
 
@@ -116,8 +119,7 @@ void ToDoList::createMenuBar() {
     actionMarkAsCompleted->setEnabled(false);
     actionMarkAsFailed->setEnabled(false);
 
-    menuTask->addAction(actionMarkAsCompleted);
-    menuTask->addAction(actionMarkAsFailed);
+    menuTask->addActions({ actionMarkAsCompleted, actionMarkAsFailed });
 
     menuBar->addMenu(menuSettings);
     menuBar->addMenu(menuTask);
@@ -131,22 +133,22 @@ void ToDoList::createTitleFrame() {
     titleImage->setScaledContents(true);
     titleText = new QLabel("My Day", this);
     titleText->setStyleSheet("font-family: Segoe UI; font-size: 18px; font-weight: bold;");
-    markAsCompletedButton = new QPushButton(this);
-    markAsCompletedButton->setIcon(QIcon("Assets/done_icon.png"));
-    markAsCompletedButton->setStyleSheet("background-color: transparent; border: none;");
-    markAsCompletedButton->setIconSize(QSize(35, 35));
-    markAsCompletedButton->setEnabled(false);
-    markAsCompletedButton->setVisible(false);
-    markAsFailedButton = new QPushButton(this);
-    markAsFailedButton->setIcon(QIcon("Assets/failed_icon.png"));
-    markAsFailedButton->setStyleSheet("background-color: transparent; border: none;");
-    markAsFailedButton->setIconSize(QSize(35, 35));
-    markAsFailedButton->setEnabled(false);
-    markAsFailedButton->setVisible(false);
+    completeTaskButton = new QPushButton(this);
+    completeTaskButton->setIcon(QIcon("Assets/done_icon.png"));
+    completeTaskButton->setStyleSheet("background-color: transparent; border: none;");
+    completeTaskButton->setIconSize(QSize(35, 35));
+    completeTaskButton->setEnabled(false);
+    completeTaskButton->setVisible(false);
+    failTaskButton = new QPushButton(this);
+    failTaskButton->setIcon(QIcon("Assets/failed_icon.png"));
+    failTaskButton->setStyleSheet("background-color: transparent; border: none;");
+    failTaskButton->setIconSize(QSize(35, 35));
+    failTaskButton->setEnabled(false);
+    failTaskButton->setVisible(false);
     QHBoxLayout* titleLayout = new QHBoxLayout(titleFrame);
     QSpacerItem* spacer = new QSpacerItem(100, 100, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    titleLayout->addWidget(markAsCompletedButton);
-    titleLayout->addWidget(markAsFailedButton);
+    titleLayout->addWidget(completeTaskButton);
+    titleLayout->addWidget(failTaskButton);
     titleLayout->addSpacerItem(spacer);
     titleLayout->addWidget(titleText);
     titleLayout->addWidget(titleImage);
@@ -206,7 +208,8 @@ QAction* ToDoList::createAction(const QString& text, const QString& iconPath) {
     action->setIcon(QIcon(iconPath));
     return action;
 }
-void ToDoList::actionAddTriggered() {
+void ToDoList::addTaskButtonPressed() {
+    addTaskButton->setStyleSheet("background-color: lightblue; border: none;");
     std::unique_ptr<TaskDialog> newTaskDialog = std::make_unique<TaskDialog>(emailValidator, dateValidator);
     newTaskDialog->setFixedSize(462, 434);
     if(newTaskDialog->exec() == QDialog::Accepted) {
@@ -232,7 +235,8 @@ void ToDoList::actionAddTriggered() {
     }
 }
 
-void ToDoList::actionEditTriggered() {
+void ToDoList::editTaskButtonPressed() {
+    editTaskButton->setStyleSheet("background-color: lightblue; border: none;");
     if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
         QMessageBox::information(this, "Error", "Choose the row at first");
         return;
@@ -242,7 +246,6 @@ void ToDoList::actionEditTriggered() {
 
     std::unique_ptr<TaskDialog> taskDialog = std::make_unique<TaskDialog>(emailValidator, dateValidator, this);
     taskDialog->setFixedSize(462, 434);
-    taskDialog->setStatus(task.statusToString());
     taskDialog->setTaskName(task.taskName);
     taskDialog->setDeadline(task.deadline);
     taskDialog->setResponsible(task.responsible);
@@ -275,7 +278,8 @@ void ToDoList::actionEditTriggered() {
     }
 }
 
-void ToDoList::actionRemoveTriggered() {
+void ToDoList::removeTaskButtonPressed() {
+    removeTaskButton->setStyleSheet("background-color: lightblue; border: none;");
     if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
         QMessageBox::information(this, "Error", "Choose the row at first");
         return;
@@ -304,20 +308,20 @@ void ToDoList::updateButtonsState() {
         editTaskButton->setEnabled(true);
         actionMarkAsCompleted->setEnabled(true);
         actionMarkAsFailed->setEnabled(true);
-        markAsCompletedButton->setEnabled(true);
-        markAsCompletedButton->setVisible(true);
-        markAsFailedButton->setEnabled(true);
-        markAsFailedButton->setVisible(true);
+        completeTaskButton->setEnabled(true);
+        completeTaskButton->setVisible(true);
+        failTaskButton->setEnabled(true);
+        failTaskButton->setVisible(true);
     }
     else {
         removeTaskButton->setEnabled(false);
         editTaskButton->setEnabled(false);
         actionMarkAsCompleted->setEnabled(false);
         actionMarkAsFailed->setEnabled(false);
-        markAsCompletedButton->setEnabled(false);
-        markAsCompletedButton->setVisible(false);
-        markAsFailedButton->setEnabled(false);
-        markAsFailedButton->setVisible(false);
+        completeTaskButton->setEnabled(false);
+        completeTaskButton->setVisible(false);
+        failTaskButton->setEnabled(false);
+        failTaskButton->setVisible(false);
     }
 }
 
@@ -395,10 +399,10 @@ void ToDoList::refreshTasks() {
     removeTaskButton->setEnabled(false);
     actionMarkAsCompleted->setEnabled(false);
     actionMarkAsFailed->setEnabled(false);
-    markAsCompletedButton->setEnabled(false);
-    markAsCompletedButton->setVisible(false);
-    markAsFailedButton->setEnabled(false);
-    markAsFailedButton->setVisible(false);
+    completeTaskButton->setEnabled(false);
+    completeTaskButton->setVisible(false);
+    failTaskButton->setEnabled(false);
+    failTaskButton->setVisible(false);
 
     QSqlQuery selectQuery;
     if (!selectQuery.exec("SELECT * FROM todolist;")) {
@@ -450,11 +454,13 @@ void ToDoList::refreshTasks() {
     mainModel->select();
 }
 
-void ToDoList::actionMarkAsCompletedTriggered() {
+void ToDoList::completeTaskButtonPressed() {
+    completeTaskButton->setStyleSheet("background-color: lightblue; border: none;");
     markTask(STATUS::COMPLETED, "Choose the row to mark as completed");
 }
 
-void ToDoList::actionMarkAsFailedTriggered() {
+void ToDoList::failTaskButtonPressed() {
+    failTaskButton->setStyleSheet("background-color: lightblue; border: none;");
     markTask(STATUS::FAILED, "Choose the row to mark as failed");
 }
 
@@ -501,4 +507,24 @@ Task ToDoList::getSelectedTask() {
     task.isMyDay = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 7)).toBool();
 
     return task;
+}
+
+void ToDoList::completeTaskButtonReleased() {
+    completeTaskButton->setStyleSheet("background-color: transparent; border: none;");
+}
+
+void ToDoList::failTaskButtonReleased() {
+    failTaskButton->setStyleSheet("background-color: transparent; border: none;");
+}
+
+void ToDoList::addTaskButtonReleased() {
+    addTaskButton->setStyleSheet("background-color: transparent; border: none;");
+}
+
+void ToDoList::editTaskButtonReleased() {
+    editTaskButton->setStyleSheet("background-color: transparent; border: none;");
+}
+
+void ToDoList::removeTaskButtonReleased() {
+    removeTaskButton->setStyleSheet("background-color: transparent; border: none;");
 }

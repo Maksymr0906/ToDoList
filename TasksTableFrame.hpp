@@ -7,7 +7,6 @@
 
 class TasksTableFrame : public QFrame {
 	Q_OBJECT
-private:
 protected:
 	QVBoxLayout* mainLayout;
 	TasksTableView* mainView;
