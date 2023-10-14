@@ -84,13 +84,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <QtRcc Include="ToDoList.qrc" />
-    <QtUic Include="EditTaskDialog.ui" />
+    <QtUic Include="TaskDialog.ui" />
     <QtUic Include="NewTaskDialog.ui" />
     <QtUic Include="ToDoList.ui" />
     <QtMoc Include="ToDoList.hpp" />
-    <ClCompile Include="EditTaskDialog.cpp" />
+    <ClCompile Include="TaskDialog.cpp" />
     <ClCompile Include="EmailValidator.cpp" />
-    <ClCompile Include="NewTaskDialog.cpp" />
     <ClCompile Include="TasksTableFrame.cpp" />
     <ClCompile Include="TasksTableView.cpp" />
     <ClCompile Include="ToDoList.cpp" />
@@ -100,8 +99,7 @@
     <QtMoc Include="TasksTableFrame.hpp" />
     <QtMoc Include="TasksTableView.hpp" />
     <QtMoc Include="DateValidator.hpp" />
-    <QtMoc Include="NewTaskDialog.hpp" />
-    <QtMoc Include="EditTaskDialog.hpp" />
+    <QtMoc Include="TaskDialog.hpp" />
     <QtMoc Include="EmailValidator.hpp" />
     <ClInclude Include="Task.hpp" />
   </ItemGroup>

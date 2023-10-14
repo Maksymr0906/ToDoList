@@ -207,7 +207,7 @@ QAction* ToDoList::createAction(const QString& text, const QString& iconPath) {
     return action;
 }
 void ToDoList::actionAddTriggered() {
-    std::unique_ptr<NewTaskDialog> newTaskDialog = std::make_unique<NewTaskDialog>(emailValidator, dateValidator);
+    std::unique_ptr<TaskDialog> newTaskDialog = std::make_unique<TaskDialog>(emailValidator, dateValidator);
     newTaskDialog->setFixedSize(462, 434);
     if(newTaskDialog->exec() == QDialog::Accepted) {
         QSqlQuery insertQuery;
@@ -240,30 +240,30 @@ void ToDoList::actionEditTriggered() {
 
     Task task = getSelectedTask();
 
-    std::unique_ptr<EditTaskDialog> editTaskDialog = std::make_unique<EditTaskDialog>(emailValidator, dateValidator, this);
-    editTaskDialog->setFixedSize(462, 434);
-    editTaskDialog->setStatus(task.statusToString());
-    editTaskDialog->setTaskName(task.taskName);
-    editTaskDialog->setDeadline(task.deadline);
-    editTaskDialog->setResponsible(task.responsible);
-    editTaskDialog->setEmail(task.email);
-    editTaskDialog->setIsImportant(task.isImportant);
-    editTaskDialog->setIsMyDay(task.isMyDay);
+    std::unique_ptr<TaskDialog> taskDialog = std::make_unique<TaskDialog>(emailValidator, dateValidator, this);
+    taskDialog->setFixedSize(462, 434);
+    taskDialog->setStatus(task.statusToString());
+    taskDialog->setTaskName(task.taskName);
+    taskDialog->setDeadline(task.deadline);
+    taskDialog->setResponsible(task.responsible);
+    taskDialog->setEmail(task.email);
+    taskDialog->setIsImportant(task.isImportant);
+    taskDialog->setIsMyDay(task.isMyDay);
 
-    if (editTaskDialog->exec() == QDialog::Accepted) {
+    if (taskDialog->exec() == QDialog::Accepted) {
         QSqlQuery updateQuery;
         QString updateQueryString = "UPDATE todolist "
             "SET task_name = :new_task_name, deadline = :new_deadline, responsible = :new_responsible, email = :new_email, status = :new_status, is_important = :new_important, is_my_day = :new_my_day "
             "WHERE id = :id";
 
         updateQuery.prepare(updateQueryString);
-        updateQuery.bindValue(":new_task_name", editTaskDialog->getTaskName().isEmpty() ? QVariant(QVariant::String) : editTaskDialog->getTaskName());
-        updateQuery.bindValue(":new_deadline", editTaskDialog->getDeadline().isEmpty() ? QVariant(QVariant::String) : editTaskDialog->getDeadline());
-        updateQuery.bindValue(":new_responsible", editTaskDialog->getResponsible().isEmpty() ? QVariant(QVariant::String) : editTaskDialog->getResponsible());
-        updateQuery.bindValue(":new_email", editTaskDialog->getEmail().isEmpty()? QVariant(QVariant::String) : editTaskDialog->getEmail());
+        updateQuery.bindValue(":new_task_name", taskDialog->getTaskName().isEmpty() ? QVariant(QVariant::String) : taskDialog->getTaskName());
+        updateQuery.bindValue(":new_deadline", taskDialog->getDeadline().isEmpty() ? QVariant(QVariant::String) : taskDialog->getDeadline());
+        updateQuery.bindValue(":new_responsible", taskDialog->getResponsible().isEmpty() ? QVariant(QVariant::String) : taskDialog->getResponsible());
+        updateQuery.bindValue(":new_email", taskDialog->getEmail().isEmpty()? QVariant(QVariant::String) : taskDialog->getEmail());
         updateQuery.bindValue(":new_status", static_cast<int>(task.status));
-        updateQuery.bindValue(":new_important", editTaskDialog->getIsImportant());
-        updateQuery.bindValue(":new_my_day", editTaskDialog->getIsMyDay());
+        updateQuery.bindValue(":new_important", taskDialog->getIsImportant());
+        updateQuery.bindValue(":new_my_day", taskDialog->getIsMyDay());
         updateQuery.bindValue(":id", task.id);
         
         if (!updateQuery.exec()) {

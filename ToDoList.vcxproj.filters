@@ -40,10 +40,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NewTaskDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditTaskDialog.cpp">
+    <ClCompile Include="TaskDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TasksTableView.cpp">
@@ -65,7 +62,7 @@
     <QtUic Include="NewTaskDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="EditTaskDialog.ui">
+    <QtUic Include="TaskDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -73,10 +70,7 @@
     <QtMoc Include="DateValidator.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="NewTaskDialog.hpp">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="EditTaskDialog.hpp">
+    <QtMoc Include="TaskDialog.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="TasksTableView.hpp">

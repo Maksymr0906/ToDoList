@@ -7,32 +7,32 @@
 #include <QTSql>
 
 #include "Task.hpp"
-#include "ui_EditTaskDialog.h"
+#include "ui_TaskDialog.h"
 #include "DateValidator.hpp"
 #include "EmailValidator.hpp"
 
-class EditTaskDialog : public QDialog {
+class TaskDialog : public QDialog {
     Q_OBJECT
 private:
-    std::unique_ptr<Ui::EditTaskDialog> ui;
+    std::unique_ptr<Ui::TaskDialog> ui;
 
 public:
-    EditTaskDialog(EmailValidator *emailValidator, DateValidator* dateValidator, QWidget* parent = nullptr) : QDialog(parent), ui(new Ui::EditTaskDialog()) {
+    TaskDialog(EmailValidator *emailValidator, DateValidator* dateValidator, QWidget* parent = nullptr) : QDialog(parent), ui(new Ui::TaskDialog()) {
         ui->setupUi(this);
         ui->deadlineLineEdit->setValidator(dateValidator);
         ui->emailLineEdit->setValidator(emailValidator);
 
-        connect(dateValidator, &DateValidator::invalidDateSignal, this, &EditTaskDialog::invalidDateSlot);
-        connect(dateValidator, &DateValidator::validDateSignal, this, &EditTaskDialog::validDateSlot);
-        connect(dateValidator, &DateValidator::emptyDateSignal, this, &EditTaskDialog::validDateSlot);
+        connect(dateValidator, &DateValidator::invalidDateSignal, this, &TaskDialog::invalidDateSlot);
+        connect(dateValidator, &DateValidator::validDateSignal, this, &TaskDialog::validDateSlot);
+        connect(dateValidator, &DateValidator::emptyDateSignal, this, &TaskDialog::validDateSlot);
 
-        connect(emailValidator, &EmailValidator::invalidEmailSignal, this, &EditTaskDialog::invalidEmailSlot);
-        connect(emailValidator, &EmailValidator::validEmailSignal, this, &EditTaskDialog::validEmailSlot);
-        connect(emailValidator, &EmailValidator::emptyEmailSignal, this, &EditTaskDialog::validEmailSlot);
+        connect(emailValidator, &EmailValidator::invalidEmailSignal, this, &TaskDialog::invalidEmailSlot);
+        connect(emailValidator, &EmailValidator::validEmailSignal, this, &TaskDialog::validEmailSlot);
+        connect(emailValidator, &EmailValidator::emptyEmailSignal, this, &TaskDialog::validEmailSlot);
 
-        connect(ui->taskNameLineEdit, &QLineEdit::textChanged, this, &EditTaskDialog::lineEditTextChanged);
-        connect(ui->deadlineLineEdit, &QLineEdit::textChanged, this, &EditTaskDialog::lineEditTextChanged);
-        connect(ui->emailLineEdit, &QLineEdit::textChanged, this, &EditTaskDialog::lineEditTextChanged);
+        connect(ui->taskNameLineEdit, &QLineEdit::textChanged, this, &TaskDialog::lineEditTextChanged);
+        connect(ui->deadlineLineEdit, &QLineEdit::textChanged, this, &TaskDialog::lineEditTextChanged);
+        connect(ui->emailLineEdit, &QLineEdit::textChanged, this, &TaskDialog::lineEditTextChanged);
     }
 
     QString getTaskName() const { return ui->taskNameLineEdit->text(); }

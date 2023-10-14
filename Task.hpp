@@ -45,6 +45,9 @@ struct Task {
 	}
 
 	void updateStatus() {
+		if (deadline.isEmpty())
+			return;
+
 		QString deadlineString = deadline;
 
 		int year = deadlineString.mid(0, 4).toInt();

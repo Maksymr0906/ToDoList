@@ -6,8 +6,7 @@
 #include <QMap>
 #include <QMainWindow>
 
-#include "NewTaskDialog.hpp"
-#include "EditTaskDialog.hpp"
+#include "TaskDialog.hpp"
 #include "TasksTableFrame.hpp"
 
 class ToDoList : public QMainWindow
