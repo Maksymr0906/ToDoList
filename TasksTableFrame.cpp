@@ -10,7 +10,6 @@ TasksTableFrame::TasksTableFrame(QAbstractItemModel* model, QWidget* parent)
 	:TasksTableFrame(parent) {
 	mainView = new TasksTableView(model, this);
 	mainLayout->addWidget(mainView);
-
 }
 
 void TasksTableFrame::setFilter(const QString pattern, int column) {

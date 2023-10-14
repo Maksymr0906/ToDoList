@@ -61,23 +61,23 @@ public:
 public slots:
     void invalidDateSlot() {
         ui->okButton->setDisabled(true);
-        ui->dateStateLabel->setText(tr("Invalid"));
+        ui->dateStateLabel->setText(tr("Invalid deadline"));
         ui->dateStateLabel->setStyleSheet("color: red; font-weight: bold;");
     }
 
     void validDateSlot() {
-        ui->dateStateLabel->setText(tr("Valid"));
+        ui->dateStateLabel->setText(tr("Valid deadline"));
         ui->dateStateLabel->setStyleSheet("color: green; font-weight: bold;");
     }
 
     void invalidEmailSlot() {
         ui->okButton->setDisabled(true);
-        ui->emailStateLabel->setText(tr("Invalid"));
+        ui->emailStateLabel->setText(tr("Invalid email"));
         ui->emailStateLabel->setStyleSheet("color: red; font-weight: bold;");
     }
 
     void validEmailSlot() {
-        ui->emailStateLabel->setText(tr("Valid"));
+        ui->emailStateLabel->setText(tr("Valid email"));
         ui->emailStateLabel->setStyleSheet("color: green; font-weight: bold;");
     }
 

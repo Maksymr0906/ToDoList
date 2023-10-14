@@ -31,10 +31,13 @@ ToDoList::ToDoList(QWidget *parent)
     createCentralWidget();
     setCentralWidget(centralWidget);
 
+    tasksTableFrame->setFilter("true", 7);
+    refreshTasks();
+
     // Connects
-    connect(addTaskButton, SIGNAL(clicked()), this, SLOT(actionAddTriggered()));
-    connect(editTaskButton, SIGNAL(clicked()), this, SLOT(actionEditTriggered()));
-    connect(removeTaskButton, SIGNAL(clicked()), this, SLOT(actionRemoveTriggered()));
+    connect(addTaskButton, &QPushButton::clicked, this, &ToDoList::actionAddTriggered);
+    connect(editTaskButton, &QPushButton::clicked, this, &ToDoList::actionEditTriggered);
+    connect(removeTaskButton, &QPushButton::clicked, this, &ToDoList::actionRemoveTriggered);
     connect(actionMyDay, &QAction::triggered, this, &ToDoList::actionMyDayTriggered);
     connect(actionImportant, &QAction::triggered, this, &ToDoList::actionImportantTriggered);
     connect(actionAll, &QAction::triggered, this, &ToDoList::actionAllTriggered);
@@ -45,12 +48,13 @@ ToDoList::ToDoList(QWidget *parent)
     connect(tasksTableFrame->getView()->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ToDoList::updateButtonsState);
     connect(actionMarkAsCompleted, &QAction::triggered, this, &ToDoList::actionMarkAsCompletedTriggered);
     connect(actionMarkAsFailed, &QAction::triggered, this, &ToDoList::actionMarkAsFailedTriggered);
-    connect(markAsCompletedButton, SIGNAL(clicked()), this, SLOT(actionMarkAsCompletedTriggered()));
-    connect(markAsFailedButton, SIGNAL(clicked()), this, SLOT(actionMarkAsFailedTriggered()));
+    connect(markAsCompletedButton, &QPushButton::clicked, this, &ToDoList::actionMarkAsCompletedTriggered);
+    connect(markAsFailedButton, &QPushButton::clicked, this, &ToDoList::actionMarkAsFailedTriggered);
 }
 
 ToDoList::~ToDoList() {
     delete dateValidator;
+    delete emailValidator;
     delete mainModel;
     delete toolBar;
     delete actionAll;
@@ -203,7 +207,6 @@ QAction* ToDoList::createAction(const QString& text, const QString& iconPath) {
     return action;
 }
 void ToDoList::actionAddTriggered() {
-    const int IN_PROCESS = 0;
     std::unique_ptr<NewTaskDialog> newTaskDialog = std::make_unique<NewTaskDialog>(emailValidator, dateValidator);
     newTaskDialog->setFixedSize(462, 434);
     if(newTaskDialog->exec() == QDialog::Accepted) {
@@ -216,7 +219,7 @@ void ToDoList::actionAddTriggered() {
         insertQuery.bindValue(":deadline", newTaskDialog->getDeadline().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getDeadline());
         insertQuery.bindValue(":responsible", newTaskDialog->getResponsible().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getResponsible());
         insertQuery.bindValue(":email", newTaskDialog->getEmail().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getEmail());
-        insertQuery.bindValue(":status", IN_PROCESS);
+        insertQuery.bindValue(":status", static_cast<int>(STATUS::IN_PROCESS));
         insertQuery.bindValue(":is_important", newTaskDialog->getIsImportant());
         insertQuery.bindValue(":is_my_day", newTaskDialog->getIsMyDay());
 
@@ -413,6 +416,35 @@ void ToDoList::refreshTasks() {
         task.status = static_cast<STATUS>(selectQuery.value("status").toInt());
         task.isMyDay = selectQuery.value("is_my_day").toBool();
         task.isImportant = selectQuery.value("is_important").toBool();
+
+        task.updateStatus();
+        task.updateIsMyDay();
+
+        if (task.status != static_cast<STATUS>(selectQuery.value("status").toInt())) {
+            QSqlQuery updateStatusQuery;
+            QString updateQueryString = "UPDATE todolist SET status = :new_status WHERE id = :id";
+            updateStatusQuery.prepare(updateQueryString);
+            updateStatusQuery.bindValue(":new_status", static_cast<int>(task.status));
+            updateStatusQuery.bindValue(":id", task.id);
+
+            if (!updateStatusQuery.exec()) {
+                QMessageBox::critical(this, "Error making a query", tr("Updating status task error: %1").arg(updateStatusQuery.lastError().text()));
+                return;
+            }
+        }
+
+        if (task.isMyDay != selectQuery.value("is_my_day").toBool()) {
+            QSqlQuery updateMyDayQuery;
+            QString updateQueryString = "UPDATE todolist SET is_my_day = :new_is_my_day WHERE id = :id";
+            updateMyDayQuery.prepare(updateQueryString);
+            updateMyDayQuery.bindValue(":new_is_my_day", task.isMyDay);
+            updateMyDayQuery.bindValue(":id", task.id);
+
+            if (!updateMyDayQuery.exec()) {
+                QMessageBox::critical(this, "Error making a query", tr("Updating is my day error: %1").arg(updateMyDayQuery.lastError().text()));
+                return;
+            }
+        }
     }
 
     mainModel->select();
@@ -428,7 +460,7 @@ void ToDoList::actionMarkAsFailedTriggered() {
 
 void ToDoList::markTask(STATUS newStatus, const QString& errorMessage) {
     if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
-        QMessageBox::information(this, "Error", "Choose the row at first");
+        QMessageBox::information(this, "Error", errorMessage);
         return;
     }
 
