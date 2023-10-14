@@ -31,7 +31,6 @@ ToDoList::ToDoList(QWidget *parent)
     createCentralWidget();
     setCentralWidget(centralWidget);
 
-    tasksTableFrame->setFilter("true", 7);
     refreshTasks();
 
     connect(addTaskButton, &QPushButton::pressed, this, &ToDoList::addTaskButtonPressed);
@@ -60,28 +59,29 @@ ToDoList::~ToDoList() {
     delete dateValidator;
     delete emailValidator;
     delete mainModel;
-    delete toolBar;
     delete actionAll;
     delete actionCompleted;
     delete actionFailed;
     delete actionImportant;
     delete actionMyDay;
     delete actionPlanned;
-    delete menuBar;
-    delete menuSettings;
+    delete toolBar;
     delete actionAboutProgram;
-    delete menuLanguage;
     delete actionEnglish;
     delete actionUkrainian;
-    delete menuTask;
+    delete menuLanguage;
+    delete menuSettings;
     delete actionMarkAsCompleted;
     delete actionMarkAsFailed;
-    delete addNewTaskFrame;
+    delete menuTask;
+    delete menuBar;
     delete addTaskButton;
+    delete editTaskButton;
     delete removeTaskButton;
-    delete titleFrame;
+    delete addNewTaskFrame;
     delete titleImage;
     delete titleText;
+    delete titleFrame;
     delete tasksTableFrame;
     delete centralWidget;
 }
@@ -108,17 +108,15 @@ void ToDoList::createMenuBar() {
     menuLanguage = new QMenu("Language", this);
     actionEnglish = new QAction("English", this);
     actionUkrainian = new QAction("Ukrainian", this);
-
     menuLanguage->addActions({ actionEnglish, actionUkrainian });
 
     menuSettings->addMenu(menuLanguage);
 
     menuTask = new QMenu("Task", this);
-    actionMarkAsCompleted = new QAction("Mark as Completed", this);
-    actionMarkAsFailed = new QAction("Mark as Failed", this);
+    actionMarkAsCompleted = createAction("Mark as Completed", "Assets/done_icon.png");
+    actionMarkAsFailed = createAction("Mark as Failed", "Assets/failed_icon.png");
     actionMarkAsCompleted->setEnabled(false);
     actionMarkAsFailed->setEnabled(false);
-
     menuTask->addActions({ actionMarkAsCompleted, actionMarkAsFailed });
 
     menuBar->addMenu(menuSettings);
@@ -127,24 +125,23 @@ void ToDoList::createMenuBar() {
 
 void ToDoList::createTitleFrame() {
     titleFrame = new QFrame(this);
+
     titleImage = new QLabel(this);
     titleImage->setPixmap(QString("Assets/myday_icon.png"));
     titleImage->setMaximumSize(QSize(40, 40));
     titleImage->setScaledContents(true);
+
     titleText = new QLabel("My Day", this);
     titleText->setStyleSheet("font-family: Segoe UI; font-size: 18px; font-weight: bold;");
-    completeTaskButton = new QPushButton(this);
-    completeTaskButton->setIcon(QIcon("Assets/done_icon.png"));
-    completeTaskButton->setStyleSheet("background-color: transparent; border: none;");
-    completeTaskButton->setIconSize(QSize(35, 35));
+    
+    completeTaskButton = createButton("Assets/done_icon.png");
     completeTaskButton->setEnabled(false);
     completeTaskButton->setVisible(false);
-    failTaskButton = new QPushButton(this);
-    failTaskButton->setIcon(QIcon("Assets/failed_icon.png"));
-    failTaskButton->setStyleSheet("background-color: transparent; border: none;");
-    failTaskButton->setIconSize(QSize(35, 35));
+
+    failTaskButton = createButton("Assets/failed_icon.png");
     failTaskButton->setEnabled(false);
     failTaskButton->setVisible(false);
+
     QHBoxLayout* titleLayout = new QHBoxLayout(titleFrame);
     QSpacerItem* spacer = new QSpacerItem(100, 100, QSizePolicy::Expanding, QSizePolicy::Minimum);
     titleLayout->addWidget(completeTaskButton);
@@ -159,24 +156,16 @@ void ToDoList::createTitleFrame() {
 void ToDoList::createTasksTableFrame() {
     tasksTableFrame = new TasksTableFrame(mainModel);
     tasksTableFrame->setFixedSize(QSize(750, 400));
-    tasksTableFrame->setFilter("true", 6);
+    tasksTableFrame->setFilter("true", 7);
 }
 
 void ToDoList::createAddNewTaskFrame() {
     QSpacerItem* spacer = new QSpacerItem(100, 100, QSizePolicy::Expanding, QSizePolicy::Minimum);
     addNewTaskFrame = new QFrame(this);
-    addTaskButton = new QPushButton(this);
-    addTaskButton->setIcon(QIcon("Assets/add_icon.png"));
-    addTaskButton->setStyleSheet("background-color: transparent; border: none;");
-    addTaskButton->setIconSize(QSize(40, 40));
-    removeTaskButton = new QPushButton(this);
-    removeTaskButton->setIcon(QIcon("Assets/remove_icon.png"));
-    removeTaskButton->setStyleSheet("background-color: transparent; border: none;");
-    removeTaskButton->setIconSize(QSize(40, 40));
-    editTaskButton = new QPushButton();
-    editTaskButton->setIcon(QIcon("Assets/edit_icon.png"));
-    editTaskButton->setStyleSheet("background-color: transparent; border: none;");
-    editTaskButton->setIconSize(QSize(40, 40));
+    addTaskButton = createButton("Assets/add_icon.png");
+    removeTaskButton = createButton("Assets/remove_icon.png");
+    editTaskButton = createButton("Assets/edit_icon.png");
+
     removeTaskButton->setEnabled(false);
     editTaskButton->setEnabled(false);
 
@@ -208,6 +197,16 @@ QAction* ToDoList::createAction(const QString& text, const QString& iconPath) {
     action->setIcon(QIcon(iconPath));
     return action;
 }
+
+QPushButton* ToDoList::createButton(const QString& iconPath) {
+    QPushButton* button = new QPushButton(this);
+    button->setIcon(QIcon(iconPath));
+    button->setIconSize(QSize(40, 40));
+    button->setStyleSheet("background-color: transparent; border: none;");
+
+    return button;
+}
+
 void ToDoList::addTaskButtonPressed() {
     addTaskButton->setStyleSheet("background-color: lightblue; border: none;");
     std::unique_ptr<TaskDialog> newTaskDialog = std::make_unique<TaskDialog>(emailValidator, dateValidator);
@@ -304,24 +303,10 @@ void ToDoList::removeTaskButtonPressed() {
 
 void ToDoList::updateButtonsState() {
     if (tasksTableFrame->getView()->selectionModel()->hasSelection()) {
-        removeTaskButton->setEnabled(true);
-        editTaskButton->setEnabled(true);
-        actionMarkAsCompleted->setEnabled(true);
-        actionMarkAsFailed->setEnabled(true);
-        completeTaskButton->setEnabled(true);
-        completeTaskButton->setVisible(true);
-        failTaskButton->setEnabled(true);
-        failTaskButton->setVisible(true);
+        enableButtons();
     }
     else {
-        removeTaskButton->setEnabled(false);
-        editTaskButton->setEnabled(false);
-        actionMarkAsCompleted->setEnabled(false);
-        actionMarkAsFailed->setEnabled(false);
-        completeTaskButton->setEnabled(false);
-        completeTaskButton->setVisible(false);
-        failTaskButton->setEnabled(false);
-        failTaskButton->setVisible(false);
+        disableButtons();
     }
 }
 
@@ -395,14 +380,7 @@ void ToDoList::refreshTitleIcon(TASK_TYPE taskType) {
 }
 
 void ToDoList::refreshTasks() {
-    editTaskButton->setEnabled(false);
-    removeTaskButton->setEnabled(false);
-    actionMarkAsCompleted->setEnabled(false);
-    actionMarkAsFailed->setEnabled(false);
-    completeTaskButton->setEnabled(false);
-    completeTaskButton->setVisible(false);
-    failTaskButton->setEnabled(false);
-    failTaskButton->setVisible(false);
+    disableButtons();
 
     QSqlQuery selectQuery;
     if (!selectQuery.exec("SELECT * FROM todolist;")) {
@@ -527,4 +505,26 @@ void ToDoList::editTaskButtonReleased() {
 
 void ToDoList::removeTaskButtonReleased() {
     removeTaskButton->setStyleSheet("background-color: transparent; border: none;");
+}
+
+void ToDoList::enableButtons() {
+    removeTaskButton->setEnabled(true);
+    editTaskButton->setEnabled(true);
+    actionMarkAsCompleted->setEnabled(true);
+    actionMarkAsFailed->setEnabled(true);
+    completeTaskButton->setEnabled(true);
+    completeTaskButton->setVisible(true);
+    failTaskButton->setEnabled(true);
+    failTaskButton->setVisible(true);
+}
+
+void ToDoList::disableButtons() {
+    editTaskButton->setEnabled(false);
+    removeTaskButton->setEnabled(false);
+    actionMarkAsCompleted->setEnabled(false);
+    actionMarkAsFailed->setEnabled(false);
+    completeTaskButton->setEnabled(false);
+    completeTaskButton->setVisible(false);
+    failTaskButton->setEnabled(false);
+    failTaskButton->setVisible(false);
 }

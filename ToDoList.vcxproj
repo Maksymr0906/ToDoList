@@ -87,7 +87,6 @@
     <QtUic Include="TaskDialog.ui" />
     <QtUic Include="ToDoList.ui" />
     <QtMoc Include="ToDoList.hpp" />
-    <ClCompile Include="EmailValidator.cpp" />
     <ClCompile Include="TasksTableFrame.cpp" />
     <ClCompile Include="TasksTableView.cpp" />
     <ClCompile Include="ToDoList.cpp" />

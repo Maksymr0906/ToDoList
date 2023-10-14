@@ -56,12 +56,15 @@ protected:
     QAction* createAction(const QString& text, const QString& iconPath);
     void refreshTasks();
     Task getSelectedTask();
+    void enableButtons();
+    void disableButtons();
+    QPushButton* createButton(const QString& iconPath);
+    void markTask(STATUS newStatus, const QString& errorMessage);
 protected slots:
     void completeTaskButtonPressed();
     void completeTaskButtonReleased();
     void failTaskButtonPressed();
     void failTaskButtonReleased();
-    void markTask(STATUS newStatus, const QString& errorMessage);
     void addTaskButtonPressed();
     void addTaskButtonReleased();
     void editTaskButtonPressed();

@@ -30,20 +30,6 @@ struct Task {
 	Task(int id = 1, QString taskName = "Empty", QString deadline = "2000.01.01", QString responsible = "None", QString email = "Empty", int status = 0, bool isMyDay = false, bool isImportant = false)
 		:id{ id }, taskName{ taskName }, deadline{ deadline }, responsible{responsible}, email{email}, status{status}, isMyDay{isMyDay}, isImportant{isImportant} {}
 
-	QString statusToString() {
-		if (status == STATUS::IN_PROCESS) {
-			return "In Process";
-		}
-		if (status == STATUS::COMPLETED) {
-			return "Completed";
-		}
-		if (status == STATUS::FAILED) {
-			return "Failed";
-		}
-		
-		return "";
-	}
-
 	void updateStatus() {
 		if (deadline.isEmpty())
 			return;

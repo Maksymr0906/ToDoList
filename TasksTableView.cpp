@@ -8,6 +8,16 @@ TasksTableView::TasksTableView(QWidget* parent) : QWidget(parent) {
 TasksTableView::TasksTableView(QAbstractItemModel* model, QWidget* parent) : TasksTableView(parent) {
     sortedModel->setSourceModel(model);
     mainView->setModel(sortedModel);
+    setTableViewAppearence();
+    setTitles();
+}
+
+TasksTableView::~TasksTableView() {
+    delete mainView;
+    delete sortedModel;
+}
+
+void TasksTableView::setTableViewAppearence() {
     mainView->setFixedSize(QSize(730, 400));
     mainView->verticalHeader()->setVisible(false);
     mainView->hideColumn(0);
@@ -21,12 +31,6 @@ TasksTableView::TasksTableView(QAbstractItemModel* model, QWidget* parent) : Tas
     mainView->setSelectionBehavior(QAbstractItemView::SelectRows);
     mainView->setSelectionMode(QAbstractItemView::SingleSelection);
     mainView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    setTitles();
-}
-
-TasksTableView::~TasksTableView() {
-    delete mainView;
-    delete sortedModel;
 }
 
 void TasksTableView::setTitles() {

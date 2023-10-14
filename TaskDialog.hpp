@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QString>
-#include <QWidget>
 #include <QDialog>
 #include <memory>
 #include <QTSql>

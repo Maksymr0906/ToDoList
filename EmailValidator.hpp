@@ -13,7 +13,7 @@ public:
             emit emptyEmailSignal();
             return Acceptable;
         }
-        else if (str.contains(QRegularExpression("^[A-Za-z0-9]+([A-Za-z0-9._-]+)*[A-Za-z0-9]@[A-Za-z0-9]+\.[A-Za-z]{2,4}$"))) {
+        else if (str.contains(QRegularExpression("^[A-Za-z0-9]+([A-Za-z0-9._-]+)*[A-Za-z0-9]@[A-Za-z0-9]+.[A-Za-z]{2,4}$"))) {
             emit validEmailSignal();
             return Acceptable;
         }
