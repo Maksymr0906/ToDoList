@@ -46,9 +46,6 @@
     <ClCompile Include="EditTaskDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TaskFrame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TasksTableView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -83,9 +80,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="EditTaskDialog.hpp">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="TaskFrame.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="RemoveTaskDialog.hpp">

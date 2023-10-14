@@ -9,6 +9,7 @@
 #include "Task.hpp"
 #include "ui_EditTaskDialog.h"
 #include "DateValidator.hpp"
+#include "EmailValidator.hpp"
 
 class EditTaskDialog : public QDialog {
     Q_OBJECT
@@ -16,13 +17,18 @@ private:
     std::unique_ptr<Ui::EditTaskDialog> ui;
 
 public:
-    EditTaskDialog(DateValidator* dateValidator, QWidget* parent = nullptr) : QDialog(parent), ui(new Ui::EditTaskDialog()) {
+    EditTaskDialog(EmailValidator *emailValidator, DateValidator* dateValidator, QWidget* parent = nullptr) : QDialog(parent), ui(new Ui::EditTaskDialog()) {
         ui->setupUi(this);
         ui->deadlineLineEdit->setValidator(dateValidator);
+        ui->emailLineEdit->setValidator(emailValidator);
 
         connect(dateValidator, &DateValidator::invalidDateSignal, this, &EditTaskDialog::invalidDateSlot);
         connect(dateValidator, &DateValidator::validDateSignal, this, &EditTaskDialog::validDateSlot);
         connect(dateValidator, &DateValidator::emptyDateSignal, this, &EditTaskDialog::validDateSlot);
+
+        connect(emailValidator, &EmailValidator::invalidEmailSignal, this, &EditTaskDialog::invalidEmailSlot);
+        connect(emailValidator, &EmailValidator::validEmailSignal, this, &EditTaskDialog::validEmailSlot);
+        connect(emailValidator, &EmailValidator::validEmailSignal, this, &EditTaskDialog::validEmailSlot);
     }
 
     QString getTaskName() const { return ui->taskNameLineEdit->text(); }
@@ -59,5 +65,17 @@ public slots:
         ui->okButton->setDisabled(false);
         ui->dateStateLabel->setText(tr("Valid"));
         ui->dateStateLabel->setStyleSheet("color: green; font-weight: bold;");
+    }
+
+    void invalidEmailSlot() {
+        ui->okButton->setDisabled(true);
+        ui->emailStateLabel->setText(tr("Invalid email"));
+        ui->emailStateLabel->setStyleSheet("color: red; font-weight: bold;");
+    }
+
+    void validEmailSlot() {
+        ui->okButton->setDisabled(false);
+        ui->emailStateLabel->setText(tr("Valid email"));
+        ui->emailStateLabel->setStyleSheet("color: green; font-weight: bold;");
     }
 };

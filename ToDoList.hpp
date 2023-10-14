@@ -9,7 +9,6 @@
 #include "NewTaskDialog.hpp"
 #include "EditTaskDialog.hpp"
 #include "RemoveTaskDialog.hpp"
-#include "TaskFrame.hpp"
 #include "TasksTableFrame.hpp"
 
 class ToDoList : public QMainWindow
@@ -21,6 +20,7 @@ public:
     ~ToDoList();
 protected:
     DateValidator* dateValidator;
+    EmailValidator* emailValidator;
     QSqlTableModel* mainModel;
     QToolBar* toolBar;
     QAction* actionAll;

@@ -2,7 +2,8 @@
 
 ToDoList::ToDoList(QWidget *parent)
     : QMainWindow(parent),
-      dateValidator{ new DateValidator(this) } {
+      dateValidator{ new DateValidator(this) },
+      emailValidator{ new EmailValidator(this) } {
     this->setWindowIcon(QIcon("Assets/program_icon.png"));
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
@@ -29,8 +30,7 @@ ToDoList::ToDoList(QWidget *parent)
     createAddNewTaskFrame();
     createCentralWidget();
     setCentralWidget(centralWidget);
-    removeTaskButton->setEnabled(false);
-    editTaskButton->setEnabled(false);
+
     // Connects
     connect(addTaskButton, SIGNAL(clicked()), this, SLOT(actionAddTriggered()));
     connect(editTaskButton, SIGNAL(clicked()), this, SLOT(actionEditTriggered()));
@@ -171,6 +171,8 @@ void ToDoList::createAddNewTaskFrame() {
     editTaskButton->setIcon(QIcon("Assets/edit_icon.png"));
     editTaskButton->setStyleSheet("background-color: transparent; border: none;");
     editTaskButton->setIconSize(QSize(40, 40));
+    removeTaskButton->setEnabled(false);
+    editTaskButton->setEnabled(false);
 
     QHBoxLayout* addNewTaskLayout = new QHBoxLayout();
     addNewTaskLayout->addSpacerItem(spacer);
@@ -235,7 +237,7 @@ void ToDoList::actionEditTriggered() {
 
     Task task = getSelectedTask();
 
-    std::unique_ptr<EditTaskDialog> editTaskDialog = std::make_unique<EditTaskDialog>(dateValidator, this);
+    std::unique_ptr<EditTaskDialog> editTaskDialog = std::make_unique<EditTaskDialog>(emailValidator, dateValidator, this);
     editTaskDialog->setFixedSize(462, 434);
     editTaskDialog->setStatus(task.statusToString());
     editTaskDialog->setTaskName(task.taskName);
