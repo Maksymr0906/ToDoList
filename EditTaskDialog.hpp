@@ -30,7 +30,9 @@ public:
         connect(emailValidator, &EmailValidator::validEmailSignal, this, &EditTaskDialog::validEmailSlot);
         connect(emailValidator, &EmailValidator::emptyEmailSignal, this, &EditTaskDialog::validEmailSlot);
 
-        connect(ui->taskNameLineEdit, &QLineEdit::textChanged, this, &EditTaskDialog::taskNameLineEditTextChanged);
+        connect(ui->taskNameLineEdit, &QLineEdit::textChanged, this, &EditTaskDialog::lineEditTextChanged);
+        connect(ui->deadlineLineEdit, &QLineEdit::textChanged, this, &EditTaskDialog::lineEditTextChanged);
+        connect(ui->emailLineEdit, &QLineEdit::textChanged, this, &EditTaskDialog::lineEditTextChanged);
     }
 
     QString getTaskName() const { return ui->taskNameLineEdit->text(); }
@@ -64,29 +66,31 @@ public slots:
     }
 
     void validDateSlot() {
-        ui->okButton->setDisabled(false);
         ui->dateStateLabel->setText(tr("Valid"));
         ui->dateStateLabel->setStyleSheet("color: green; font-weight: bold;");
     }
 
     void invalidEmailSlot() {
         ui->okButton->setDisabled(true);
-        ui->emailStateLabel->setText(tr("Invalid email"));
+        ui->emailStateLabel->setText(tr("Invalid"));
         ui->emailStateLabel->setStyleSheet("color: red; font-weight: bold;");
     }
 
     void validEmailSlot() {
-        ui->okButton->setDisabled(false);
-        ui->emailStateLabel->setText(tr("Valid email"));
+        ui->emailStateLabel->setText(tr("Valid"));
         ui->emailStateLabel->setStyleSheet("color: green; font-weight: bold;");
     }
 
-    void taskNameLineEditTextChanged() {
-        if (ui->taskNameLineEdit->text().isEmpty()) {
-            ui->okButton->setDisabled(true);
+    void lineEditTextChanged() {
+        QString deadlineLineEditString = ui->deadlineLineEdit->text();
+        QString emailLineEditString = ui->emailLineEdit->text();
+        int pos = 0;
+        if (!ui->taskNameLineEdit->text().isEmpty() && ui->emailLineEdit->validator()->validate(emailLineEditString, pos) == QValidator::Acceptable
+            && ui->deadlineLineEdit->validator()->validate(deadlineLineEditString, pos) == QValidator::Acceptable) {
+            ui->okButton->setDisabled(false);
         }
         else {
-            ui->okButton->setDisabled(false);
+            ui->okButton->setDisabled(true);
         }
     }
 };

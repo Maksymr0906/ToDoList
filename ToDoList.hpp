@@ -8,7 +8,6 @@
 
 #include "NewTaskDialog.hpp"
 #include "EditTaskDialog.hpp"
-#include "RemoveTaskDialog.hpp"
 #include "TasksTableFrame.hpp"
 
 class ToDoList : public QMainWindow

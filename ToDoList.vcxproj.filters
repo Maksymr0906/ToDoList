@@ -68,9 +68,6 @@
     <QtUic Include="EditTaskDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="RemoveTaskDialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DateValidator.hpp">
@@ -80,9 +77,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="EditTaskDialog.hpp">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="RemoveTaskDialog.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="TasksTableView.hpp">
