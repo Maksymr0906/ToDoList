@@ -28,7 +28,9 @@ public:
 
         connect(emailValidator, &EmailValidator::invalidEmailSignal, this, &EditTaskDialog::invalidEmailSlot);
         connect(emailValidator, &EmailValidator::validEmailSignal, this, &EditTaskDialog::validEmailSlot);
-        connect(emailValidator, &EmailValidator::validEmailSignal, this, &EditTaskDialog::validEmailSlot);
+        connect(emailValidator, &EmailValidator::emptyEmailSignal, this, &EditTaskDialog::validEmailSlot);
+
+        connect(ui->taskNameLineEdit, &QLineEdit::textChanged, this, &EditTaskDialog::taskNameLineEditTextChanged);
     }
 
     QString getTaskName() const { return ui->taskNameLineEdit->text(); }
@@ -77,5 +79,14 @@ public slots:
         ui->okButton->setDisabled(false);
         ui->emailStateLabel->setText(tr("Valid email"));
         ui->emailStateLabel->setStyleSheet("color: green; font-weight: bold;");
+    }
+
+    void taskNameLineEditTextChanged() {
+        if (ui->taskNameLineEdit->text().isEmpty()) {
+            ui->okButton->setDisabled(true);
+        }
+        else {
+            ui->okButton->setDisabled(false);
+        }
     }
 };

@@ -204,7 +204,7 @@ QAction* ToDoList::createAction(const QString& text, const QString& iconPath) {
 }
 void ToDoList::actionAddTriggered() {
     const int IN_PROCESS = 0;
-    std::unique_ptr<NewTaskDialog> newTaskDialog = std::make_unique<NewTaskDialog>(dateValidator);
+    std::unique_ptr<NewTaskDialog> newTaskDialog = std::make_unique<NewTaskDialog>(emailValidator, dateValidator);
     newTaskDialog->setFixedSize(462, 434);
     if(newTaskDialog->exec() == QDialog::Accepted) {
         QSqlQuery insertQuery;
