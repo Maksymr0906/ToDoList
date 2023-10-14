@@ -22,10 +22,10 @@ TasksTableView::~TasksTableView() {
 }
 
 void TasksTableView::setTitles() {
-    sortedModel->setHeaderData(0, Qt::Horizontal, tr("Task"));
-    sortedModel->setHeaderData(1, Qt::Horizontal, tr("Deadline"));
-    sortedModel->setHeaderData(2, Qt::Horizontal, tr("Responsible"));
-    sortedModel->setHeaderData(3, Qt::Horizontal, tr("Email"));
+    sortedModel->setHeaderData(1, Qt::Horizontal, tr("Task"));
+    sortedModel->setHeaderData(2, Qt::Horizontal, tr("Deadline"));
+    sortedModel->setHeaderData(3, Qt::Horizontal, tr("Responsible"));
+    sortedModel->setHeaderData(4, Qt::Horizontal, tr("Email"));
 }
 
 void TasksTableView::setFilter(const QString pattern, int column) {

@@ -44,6 +44,8 @@ protected:
     QPushButton* removeTaskButton;
     QPushButton* editTaskButton;
     QFrame* titleFrame;
+    QPushButton* markAsCompletedButton;
+    QPushButton* markAsFailedButton;
     QLabel* titleImage;
     QLabel* titleText;
     TasksTableFrame* tasksTableFrame;
@@ -59,6 +61,7 @@ private:
     void createCentralWidget();
     QAction* createAction(const QString& text, const QString& iconPath);
     void refreshTasks();
+    Task getSelectedTask();
 private slots:
     void actionMarkAsCompletedTriggered();
     void actionMarkAsFailedTriggered();

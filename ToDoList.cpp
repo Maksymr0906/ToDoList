@@ -45,6 +45,8 @@ ToDoList::ToDoList(QWidget *parent)
     connect(tasksTableFrame->getView()->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ToDoList::updateButtonsState);
     connect(actionMarkAsCompleted, &QAction::triggered, this, &ToDoList::actionMarkAsCompletedTriggered);
     connect(actionMarkAsFailed, &QAction::triggered, this, &ToDoList::actionMarkAsFailedTriggered);
+    connect(markAsCompletedButton, SIGNAL(clicked()), this, SLOT(actionMarkAsCompletedTriggered()));
+    connect(markAsFailedButton, SIGNAL(clicked()), this, SLOT(actionMarkAsFailedTriggered()));
 }
 
 ToDoList::~ToDoList() {
@@ -125,8 +127,22 @@ void ToDoList::createTitleFrame() {
     titleImage->setScaledContents(true);
     titleText = new QLabel("My Day", this);
     titleText->setStyleSheet("font-family: Segoe UI; font-size: 18px; font-weight: bold;");
+    markAsCompletedButton = new QPushButton(this);
+    markAsCompletedButton->setIcon(QIcon("Assets/done_icon.png"));
+    markAsCompletedButton->setStyleSheet("background-color: transparent; border: none;");
+    markAsCompletedButton->setIconSize(QSize(35, 35));
+    markAsCompletedButton->setEnabled(false);
+    markAsCompletedButton->setVisible(false);
+    markAsFailedButton = new QPushButton(this);
+    markAsFailedButton->setIcon(QIcon("Assets/failed_icon.png"));
+    markAsFailedButton->setStyleSheet("background-color: transparent; border: none;");
+    markAsFailedButton->setIconSize(QSize(35, 35));
+    markAsFailedButton->setEnabled(false);
+    markAsFailedButton->setVisible(false);
     QHBoxLayout* titleLayout = new QHBoxLayout(titleFrame);
     QSpacerItem* spacer = new QSpacerItem(100, 100, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    titleLayout->addWidget(markAsCompletedButton);
+    titleLayout->addWidget(markAsFailedButton);
     titleLayout->addSpacerItem(spacer);
     titleLayout->addWidget(titleText);
     titleLayout->addWidget(titleImage);
@@ -191,13 +207,13 @@ void ToDoList::actionAddTriggered() {
     if(newTaskDialog->exec() == QDialog::Accepted) {
         QSqlQuery insertQuery;
         QString insertQueryString = "INSERT INTO todolist (task_name, deadline, responsible, email, status, is_important, is_my_day) "
-            "VALUES (:task_name, :deadline, :responsible, :email, :status, :is_important, :is_my_day);";
+            "VALUES (:task_name, :deadline, :responsible, :email, :status, :is_important, :is_my_day)";
 
         insertQuery.prepare(insertQueryString);
-        insertQuery.bindValue(":task_name", newTaskDialog->getTaskName());
-        insertQuery.bindValue(":deadline", newTaskDialog->getDeadline());
-        insertQuery.bindValue(":responsible", newTaskDialog->getResponsible());
-        insertQuery.bindValue(":email", newTaskDialog->getEmail());
+        insertQuery.bindValue(":task_name", newTaskDialog->getTaskName().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getTaskName());
+        insertQuery.bindValue(":deadline", newTaskDialog->getDeadline().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getDeadline());
+        insertQuery.bindValue(":responsible", newTaskDialog->getResponsible().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getResponsible());
+        insertQuery.bindValue(":email", newTaskDialog->getEmail().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getEmail());
         insertQuery.bindValue(":status", IN_PROCESS);
         insertQuery.bindValue(":is_important", newTaskDialog->getIsImportant());
         insertQuery.bindValue(":is_my_day", newTaskDialog->getIsMyDay());
@@ -217,17 +233,7 @@ void ToDoList::actionEditTriggered() {
         return;
     }
 
-    QModelIndex selectedRowIndex = tasksTableFrame->getSelectionModel()->selectedRows().at(0);
-    QSortFilterProxyModel* sortedModel = tasksTableFrame->getSortedModel();
-
-    Task task;
-    task.taskName = sortedModel->data(selectedRowIndex).toString();
-    task.deadline = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 1)).toString();
-    task.responsible = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 2)).toString();
-    task.email = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 3)).toString();
-    task.status = static_cast<STATUS>(sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 4)).toInt());
-    task.isImportant = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 5)).toBool();
-    task.isMyDay = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 6)).toBool();
+    Task task = getSelectedTask();
 
     std::unique_ptr<EditTaskDialog> editTaskDialog = std::make_unique<EditTaskDialog>(dateValidator, this);
     editTaskDialog->setFixedSize(462, 434);
@@ -243,23 +249,18 @@ void ToDoList::actionEditTriggered() {
         QSqlQuery updateQuery;
         QString updateQueryString = "UPDATE todolist "
             "SET task_name = :new_task_name, deadline = :new_deadline, responsible = :new_responsible, email = :new_email, status = :new_status, is_important = :new_important, is_my_day = :new_my_day "
-            "WHERE task_name = :old_task_name AND deadline = :old_deadline AND responsible = :old_responsible AND email = :old_email AND status = :old_status AND is_important = :old_important AND is_my_day = :old_my_day;";
+            "WHERE id = :id";
 
         updateQuery.prepare(updateQueryString);
-        updateQuery.bindValue(":new_task_name", editTaskDialog->getTaskName());
-        updateQuery.bindValue(":new_deadline", editTaskDialog->getDeadline());
-        updateQuery.bindValue(":new_responsible", editTaskDialog->getResponsible());
-        updateQuery.bindValue(":new_email", editTaskDialog->getEmail());
+        updateQuery.bindValue(":new_task_name", editTaskDialog->getTaskName().isEmpty() ? QVariant(QVariant::String) : editTaskDialog->getTaskName());
+        updateQuery.bindValue(":new_deadline", editTaskDialog->getDeadline().isEmpty() ? QVariant(QVariant::String) : editTaskDialog->getDeadline());
+        updateQuery.bindValue(":new_responsible", editTaskDialog->getResponsible().isEmpty() ? QVariant(QVariant::String) : editTaskDialog->getResponsible());
+        updateQuery.bindValue(":new_email", editTaskDialog->getEmail().isEmpty()? QVariant(QVariant::String) : editTaskDialog->getEmail());
         updateQuery.bindValue(":new_status", static_cast<int>(task.status));
         updateQuery.bindValue(":new_important", editTaskDialog->getIsImportant());
         updateQuery.bindValue(":new_my_day", editTaskDialog->getIsMyDay());
-        updateQuery.bindValue(":old_task_name", task.taskName);
-        updateQuery.bindValue(":old_deadline", task.deadline);
-        updateQuery.bindValue(":old_responsible", task.responsible);
-        updateQuery.bindValue(":old_email", task.email);
-        updateQuery.bindValue(":old_status", static_cast<int>(task.status));
-        updateQuery.bindValue(":old_important", task.isImportant);
-        updateQuery.bindValue(":old_my_day", task.isMyDay);
+        updateQuery.bindValue(":id", task.id);
+        
         if (!updateQuery.exec()) {
             QMessageBox::critical(this, tr("Error"), tr("Updating task error: %1").arg(updateQuery.lastError().text()));
             return;
@@ -275,35 +276,12 @@ void ToDoList::actionRemoveTriggered() {
         return;
     }
 
-    QModelIndex selectedRowIndex = tasksTableFrame->getSelectionModel()->selectedRows().at(0);
-    QSortFilterProxyModel* sortedModel = tasksTableFrame->getSortedModel();
-
-    Task task;
-    task.taskName = sortedModel->data(selectedRowIndex).toString();
-    task.deadline = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 1)).toString();
-    task.responsible = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 2)).toString();
-    task.email = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 3)).toString();
-    task.status = static_cast<STATUS>(sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 4)).toInt());
-    task.isImportant = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 5)).toBool();
-    task.isMyDay = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 6)).toBool();
-    
-    QString taskNameCondition = task.taskName.isEmpty() ? "task_name IS NULL" : "task_name = '" + task.taskName + "'";
-    QString deadlineCondition = task.deadline.isEmpty() ? "deadline IS NULL" : "deadline = '" + task.deadline + "'";
-    QString responsibleCondition = task.responsible.isEmpty() ? "responsible IS NULL" : "responsible = '" + task.responsible + "'";
-    QString emailCondition = task.email.isEmpty() ? "email IS NULL" : "email = '" + task.email + "'";
+    Task task = getSelectedTask();
 
     QSqlQuery deleteQuery;
-    QString deleteQueryString = "DELETE FROM todolist WHERE "
-        + taskNameCondition + " AND "
-        + deadlineCondition + " AND "
-        + responsibleCondition + " AND "
-        + emailCondition + " AND "
-        "status = :status AND is_important = :isImportant AND is_my_day = :isMyDay";
-
+    QString deleteQueryString = "DELETE FROM todolist WHERE id = :id";
     deleteQuery.prepare(deleteQueryString);
-    deleteQuery.bindValue(":status", static_cast<int>(task.status));
-    deleteQuery.bindValue(":isImportant", task.isImportant);
-    deleteQuery.bindValue(":isMyDay", task.isMyDay);
+    deleteQuery.bindValue(":id", task.id);
 
     bool deleteResult = deleteQuery.exec();
 
@@ -321,23 +299,31 @@ void ToDoList::updateButtonsState() {
         editTaskButton->setEnabled(true);
         actionMarkAsCompleted->setEnabled(true);
         actionMarkAsFailed->setEnabled(true);
+        markAsCompletedButton->setEnabled(true);
+        markAsCompletedButton->setVisible(true);
+        markAsFailedButton->setEnabled(true);
+        markAsFailedButton->setVisible(true);
     }
     else {
         removeTaskButton->setEnabled(false);
         editTaskButton->setEnabled(false);
         actionMarkAsCompleted->setEnabled(false);
         actionMarkAsFailed->setEnabled(false);
+        markAsCompletedButton->setEnabled(false);
+        markAsCompletedButton->setVisible(false);
+        markAsFailedButton->setEnabled(false);
+        markAsFailedButton->setVisible(false);
     }
 }
 
 void ToDoList::actionMyDayTriggered() {
     refreshTitle(TASK_TYPE::MY_DAY);
-    tasksTableFrame->setFilter("true", 6);
+    tasksTableFrame->setFilter("true", 7);
 }
 
 void ToDoList::actionImportantTriggered() {
     refreshTitle(TASK_TYPE::IMPORTANT);
-    tasksTableFrame->setFilter("true", 5);
+    tasksTableFrame->setFilter("true", 6);
 }
 
 void ToDoList::actionAllTriggered() {
@@ -347,17 +333,17 @@ void ToDoList::actionAllTriggered() {
 
 void ToDoList::actionPlannedTriggered() {
     refreshTitle(TASK_TYPE::PLANNED);
-    tasksTableFrame->setFilter("20", 1);
+    tasksTableFrame->setFilter("20", 2);
 }
 
 void ToDoList::actionCompletedTriggered() {
     refreshTitle(TASK_TYPE::COMPLETED);
-    tasksTableFrame->setFilter("1", 4);
+    tasksTableFrame->setFilter("1", 5);
 }
 
 void ToDoList::actionFailedTriggered() {
     refreshTitle(TASK_TYPE::FAILED);
-    tasksTableFrame->setFilter("2", 4);
+    tasksTableFrame->setFilter("2", 5);
 }
 
 void ToDoList::actionAboutProgramTriggered() {
@@ -404,6 +390,10 @@ void ToDoList::refreshTasks() {
     removeTaskButton->setEnabled(false);
     actionMarkAsCompleted->setEnabled(false);
     actionMarkAsFailed->setEnabled(false);
+    markAsCompletedButton->setEnabled(false);
+    markAsCompletedButton->setVisible(false);
+    markAsFailedButton->setEnabled(false);
+    markAsFailedButton->setVisible(false);
 
     QSqlQuery selectQuery;
     if (!selectQuery.exec("SELECT * FROM todolist;")) {
@@ -413,6 +403,7 @@ void ToDoList::refreshTasks() {
 
     while (selectQuery.next()) {
         Task task;
+        task.id = selectQuery.value("id").toInt();
         task.taskName = selectQuery.value("task_name").toString();
         task.deadline = selectQuery.value("deadline").toString();
         task.responsible = selectQuery.value("responsible").toString();
@@ -439,37 +430,41 @@ void ToDoList::markTask(STATUS newStatus, const QString& errorMessage) {
         return;
     }
 
-    QModelIndex selectedRowIndex = tasksTableFrame->getSelectionModel()->selectedRows().at(0);
-    QSortFilterProxyModel* sortedModel = tasksTableFrame->getSortedModel();
-
-    Task task;
-    task.taskName = sortedModel->data(selectedRowIndex).toString();
-    task.deadline = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 1)).toString();
-    task.responsible = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 2)).toString();
-    task.email = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 3)).toString();
-    task.status = static_cast<STATUS>(sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 4)).toInt());
-    task.isImportant = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 5)).toBool();
-    task.isMyDay = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 6)).toBool();
+    Task task = getSelectedTask();
 
     QSqlQuery updateQuery;
     QString updateQueryString = "UPDATE todolist "
         "SET status = :new_status "
-        "WHERE task_name = :old_task_name AND deadline = :old_deadline AND status = :old_status AND is_important = :old_important AND is_my_day = :old_my_day;";
+        "WHERE id = :id";
 
     updateQuery.prepare(updateQueryString);
     if (task.status != newStatus)
         updateQuery.bindValue(":new_status", static_cast<int>(newStatus));
     else
         updateQuery.bindValue(":new_status", static_cast<int>(STATUS::IN_PROCESS));
-    updateQuery.bindValue(":old_task_name", task.taskName);
-    updateQuery.bindValue(":old_deadline", task.deadline);
-    updateQuery.bindValue(":old_status", static_cast<int>(task.status));
-    updateQuery.bindValue(":old_important", task.isImportant);
-    updateQuery.bindValue(":old_my_day", task.isMyDay);
+    updateQuery.bindValue(":id", task.id);
+
     if (!updateQuery.exec()) {
         QMessageBox::critical(this, tr("Error"), tr("Updating task error: %1").arg(updateQuery.lastError().text()));
         return;
     }
 
     refreshTasks();
+}
+
+Task ToDoList::getSelectedTask() {
+    QModelIndex selectedRowIndex = tasksTableFrame->getSelectionModel()->selectedRows().at(0);
+    QSortFilterProxyModel* sortedModel = tasksTableFrame->getSortedModel();
+
+    Task task;
+    task.id = sortedModel->data(selectedRowIndex).toInt();
+    task.taskName = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 1)).toString();
+    task.deadline = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 2)).toString();
+    task.responsible = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 3)).toString();
+    task.email = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 4)).toString();
+    task.status = static_cast<STATUS>(sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 5)).toInt());
+    task.isImportant = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 6)).toBool();
+    task.isMyDay = sortedModel->data(selectedRowIndex.sibling(selectedRowIndex.row(), selectedRowIndex.column() + 7)).toBool();
+
+    return task;
 }

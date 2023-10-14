@@ -90,6 +90,7 @@
     <QtUic Include="ToDoList.ui" />
     <QtMoc Include="ToDoList.hpp" />
     <ClCompile Include="EditTaskDialog.cpp" />
+    <ClCompile Include="EmailValidator.cpp" />
     <ClCompile Include="NewTaskDialog.cpp" />
     <ClCompile Include="TaskFrame.cpp" />
     <ClCompile Include="TasksTableFrame.cpp" />
@@ -105,6 +106,7 @@
     <QtMoc Include="NewTaskDialog.hpp" />
     <QtMoc Include="EditTaskDialog.hpp" />
     <QtMoc Include="RemoveTaskDialog.hpp" />
+    <QtMoc Include="EmailValidator.hpp" />
     <ClInclude Include="Task.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -22,6 +22,7 @@ public:
 
         connect(dateValidator, &DateValidator::invalidDateSignal, this, &EditTaskDialog::invalidDateSlot);
         connect(dateValidator, &DateValidator::validDateSignal, this, &EditTaskDialog::validDateSlot);
+        connect(dateValidator, &DateValidator::emptyDateSignal, this, &EditTaskDialog::validDateSlot);
     }
 
     QString getTaskName() const { return ui->taskNameLineEdit->text(); }

@@ -55,6 +55,9 @@
     <ClCompile Include="TasksTableFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EmailValidator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task.hpp">
@@ -92,6 +95,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="TasksTableFrame.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="EmailValidator.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
