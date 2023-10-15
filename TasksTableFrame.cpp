@@ -19,3 +19,7 @@ void TasksTableFrame::setFilter(const QString pattern, int column) {
 void TasksTableFrame::resetFilter() {
 	mainView->resetFilter();
 }
+
+void TasksTableFrame::setTitles() {
+	mainView->setTitles();
+}

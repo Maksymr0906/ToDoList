@@ -13,6 +13,7 @@ public:
 
 	void setFilter(const QString pattern, int column);
 	void resetFilter();
+	void setTitles();
 
 	QItemSelectionModel* getSelectionModel() const { return mainView->getSelectionModel(); }
 	QSortFilterProxyModel* getSortedModel() const { return mainView->getSortedModel(); }

@@ -53,6 +53,8 @@ ToDoList::ToDoList(QWidget *parent)
     connect(completeTaskButton, &QPushButton::released, this, &ToDoList::completeTaskButtonReleased);
     connect(failTaskButton, &QPushButton::pressed, this, &ToDoList::failTaskButtonPressed);
     connect(failTaskButton, &QPushButton::released, this, &ToDoList::failTaskButtonReleased);
+    connect(actionEnglish, &QAction::triggered, this, &ToDoList::actionEnglishTriggered);
+    connect(actionUkrainian, &QAction::triggered, this, &ToDoList::actionUkrainianTriggered);
 }
 
 ToDoList::~ToDoList() {
@@ -84,6 +86,38 @@ ToDoList::~ToDoList() {
     delete titleFrame;
     delete tasksTableFrame;
     delete centralWidget;
+}
+
+void ToDoList::actionEnglishTriggered() {
+    translator.load("lang_en.qm");
+    qApp->installTranslator(&translator);
+    retranslateUI();
+}
+
+void ToDoList::actionUkrainianTriggered() {
+    translator.load("lang_uk_UA.qm");
+    qApp->installTranslator(&translator);
+    retranslateUI();
+}
+
+void ToDoList::retranslateUI() {
+    tasksTableFrame->setTitles();
+    actionMyDay->setText(tr("My Day"));
+    actionImportant->setText(tr("Important"));
+    actionAll->setText(tr("All"));
+    actionPlanned->setText(tr("Planned"));
+    actionCompleted->setText(tr("Completed"));
+    actionFailed->setText(tr("Failed"));
+    menuSettings->setTitle(tr("Settings"));
+    actionAboutProgram->setText(tr("About program"));
+    menuLanguage->setTitle(tr("Language"));
+    actionEnglish->setText(tr("English"));
+    actionUkrainian->setText(tr("Ukrainian"));
+    menuTask->setTitle(tr("Task"));
+    actionMarkAsCompleted->setText(tr("Mark as Completed"));
+    actionMarkAsFailed->setText(tr("Mark as Failed"));
+    refreshTitle(TASK_TYPE::MY_DAY);
+    tasksTableFrame->setFilter("true", 7);
 }
 
 void ToDoList::createToolBar() {
@@ -350,17 +384,23 @@ void ToDoList::refreshTitle(TASK_TYPE taskType) {
 }
 
 void ToDoList::refreshTitleText(TASK_TYPE taskType) {
-    static const QMap<TASK_TYPE, QString> taskTypeTotitleText = {
-        {TASK_TYPE::MY_DAY, tr("My Day")},
-        {TASK_TYPE::IMPORTANT, tr("Important")},
-        {TASK_TYPE::ALL, tr("All")},
-        {TASK_TYPE::PLANNED, tr("Planned")},
-        {TASK_TYPE::COMPLETED, tr("Completed")},
-        {TASK_TYPE::FAILED, tr("Failed")}
-    };
-
-    if(taskTypeTotitleText.contains(taskType)) {
-        titleText->setText(taskTypeTotitleText.value(taskType));
+    if (taskType == TASK_TYPE::MY_DAY) {
+        titleText->setText(tr("My Day"));
+    }
+    else if (taskType == TASK_TYPE::IMPORTANT) {
+        titleText->setText(tr("Important"));
+    }
+    else if (taskType == TASK_TYPE::ALL) {
+        titleText->setText(tr("All"));
+    }
+    else if (taskType == TASK_TYPE::PLANNED) {
+        titleText->setText(tr("Planned"));
+    }
+    else if (taskType == TASK_TYPE::COMPLETED) {
+        titleText->setText(tr("Completed"));
+    }
+    else {
+        titleText->setText(tr("Failed"));
     }
 }
 

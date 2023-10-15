@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QMap>
 #include <QMainWindow>
+#include <QTranslator>
 
 #include "TaskDialog.hpp"
 #include "TasksTableFrame.hpp"
@@ -43,6 +44,7 @@ protected:
     QLabel* titleImage;
     QLabel* titleText;
     TasksTableFrame* tasksTableFrame;
+    QTranslator translator;
 
     void refreshTitle(TASK_TYPE taskType);
     void refreshTitleText(TASK_TYPE taskType);
@@ -60,6 +62,7 @@ protected:
     void disableButtons();
     QPushButton* createButton(const QString& iconPath);
     void markTask(STATUS newStatus, const QString& errorMessage);
+    void retranslateUI();
 protected slots:
     void completeTaskButtonPressed();
     void completeTaskButtonReleased();
@@ -79,6 +82,8 @@ protected slots:
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
     void updateButtonsState();
+    void actionEnglishTriggered();
+    void actionUkrainianTriggered();
 public:
     ToDoList(QWidget *parent = nullptr);
     ~ToDoList();
