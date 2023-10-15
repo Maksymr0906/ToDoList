@@ -1,6 +1,5 @@
 #pragma once
 
-#include <exception>
 #include <QPixmap>
 #include <QMessageBox>
 #include <QMap>
@@ -46,9 +45,6 @@ protected:
     TasksTableFrame* tasksTableFrame;
     QTranslator translator;
 
-    void refreshTitle(TASK_TYPE taskType);
-    void refreshTitleText(TASK_TYPE taskType);
-    void refreshTitleIcon(TASK_TYPE taskType);
     void createToolBar();
     void createMenuBar();
     void createTitleFrame();
@@ -56,24 +52,27 @@ protected:
     void createAddNewTaskFrame();
     void createCentralWidget();
     QAction* createAction(const QString& text, const QString& iconPath);
+    QPushButton* createButton(const QString& iconPath);
     void refreshTasks();
-    Task getSelectedTask();
     void enableButtons();
     void disableButtons();
-    QPushButton* createButton(const QString& iconPath);
     void markTask(STATUS newStatus, const QString& errorMessage);
+    Task getSelectedTask();
     void retranslateUI();
+    void refreshTitle(TASK_TYPE taskType);
+    void refreshTitleText(TASK_TYPE taskType);
+    void refreshTitleIcon(TASK_TYPE taskType);
 protected slots:
-    void completeTaskButtonPressed();
-    void completeTaskButtonReleased();
-    void failTaskButtonPressed();
-    void failTaskButtonReleased();
     void addTaskButtonPressed();
     void addTaskButtonReleased();
     void editTaskButtonPressed();
     void editTaskButtonReleased();
     void removeTaskButtonPressed();
     void removeTaskButtonReleased();
+    void completeTaskButtonPressed();
+    void completeTaskButtonReleased();
+    void failTaskButtonPressed();
+    void failTaskButtonReleased();
     void actionMyDayTriggered();
     void actionImportantTriggered();
     void actionAllTriggered();
@@ -81,9 +80,9 @@ protected slots:
     void actionCompletedTriggered();
     void actionFailedTriggered();
     void actionAboutProgramTriggered();
-    void updateButtonsState();
     void actionEnglishTriggered();
     void actionUkrainianTriggered();
+    void updateButtonsState();
 public:
     ToDoList(QWidget *parent = nullptr);
     ~ToDoList();

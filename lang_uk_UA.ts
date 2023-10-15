@@ -4,9 +4,13 @@
 <context>
     <name>TaskDialog</name>
     <message>
-        <location filename="TaskDialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation>Діалог</translation>
+        <translation type="vanished">Діалог</translation>
+    </message>
+    <message>
+        <location filename="TaskDialog.ui" line="14"/>
+        <source>Task Menu</source>
+        <translation>Меню Завдання</translation>
     </message>
     <message>
         <location filename="TaskDialog.ui" line="46"/>
@@ -49,22 +53,22 @@
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="TaskDialog.hpp" line="53"/>
+        <location filename="TaskDialog.cpp" line="25"/>
         <source>Invalid deadline</source>
         <translation>Неправильний термін</translation>
     </message>
     <message>
-        <location filename="TaskDialog.hpp" line="58"/>
+        <location filename="TaskDialog.cpp" line="30"/>
         <source>Valid deadline</source>
         <translation>Правильний термін</translation>
     </message>
     <message>
-        <location filename="TaskDialog.hpp" line="64"/>
+        <location filename="TaskDialog.cpp" line="36"/>
         <source>Invalid email</source>
         <translation>Неправильна пошта</translation>
     </message>
     <message>
-        <location filename="TaskDialog.hpp" line="69"/>
+        <location filename="TaskDialog.cpp" line="41"/>
         <source>Valid email</source>
         <translation>Правильна пошта</translation>
     </message>
@@ -96,43 +100,43 @@
     <name>ToDoList</name>
     <message>
         <location filename="ToDoList.cpp" line="16"/>
-        <location filename="ToDoList.cpp" line="261"/>
-        <location filename="ToDoList.cpp" line="272"/>
-        <location filename="ToDoList.cpp" line="304"/>
-        <location filename="ToDoList.cpp" line="315"/>
-        <location filename="ToDoList.cpp" line="329"/>
-        <location filename="ToDoList.cpp" line="479"/>
-        <location filename="ToDoList.cpp" line="498"/>
+        <location filename="ToDoList.cpp" line="291"/>
+        <location filename="ToDoList.cpp" line="310"/>
+        <location filename="ToDoList.cpp" line="426"/>
+        <location filename="ToDoList.cpp" line="441"/>
+        <location filename="ToDoList.cpp" line="473"/>
+        <location filename="ToDoList.cpp" line="488"/>
+        <location filename="ToDoList.cpp" line="502"/>
         <source>Error</source>
         <translation>Помилка</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="261"/>
+        <location filename="ToDoList.cpp" line="426"/>
         <source>Adding task error: %1</source>
         <translation>Помилка додання завдання: %1</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="272"/>
-        <location filename="ToDoList.cpp" line="315"/>
+        <location filename="ToDoList.cpp" line="441"/>
+        <location filename="ToDoList.cpp" line="488"/>
         <source>Choose the row at first</source>
         <translation>Спершу виберіть рядок</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="304"/>
-        <location filename="ToDoList.cpp" line="498"/>
+        <location filename="ToDoList.cpp" line="310"/>
+        <location filename="ToDoList.cpp" line="473"/>
         <source>Updating task error: %1</source>
         <translation>Помилка оновлення завдання: %1</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="329"/>
+        <location filename="ToDoList.cpp" line="502"/>
         <source>Deleting task error: %1</source>
         <translation>Помилка видалення завдання: %1</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="105"/>
-        <location filename="ToDoList.cpp" line="122"/>
-        <location filename="ToDoList.cpp" line="166"/>
-        <location filename="ToDoList.cpp" line="386"/>
+        <location filename="ToDoList.cpp" line="94"/>
+        <location filename="ToDoList.cpp" line="138"/>
+        <location filename="ToDoList.cpp" line="336"/>
+        <location filename="ToDoList.cpp" line="361"/>
         <source>My Day</source>
         <translation>Мій День</translation>
     </message>
@@ -142,114 +146,124 @@
         <translation>Помилка відкриття бази даних</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="106"/>
-        <location filename="ToDoList.cpp" line="123"/>
-        <location filename="ToDoList.cpp" line="387"/>
+        <location filename="ToDoList.cpp" line="95"/>
+        <location filename="ToDoList.cpp" line="337"/>
+        <location filename="ToDoList.cpp" line="364"/>
         <source>Important</source>
         <translation>Важливі завдання</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="107"/>
-        <location filename="ToDoList.cpp" line="124"/>
-        <location filename="ToDoList.cpp" line="388"/>
+        <location filename="ToDoList.cpp" line="96"/>
+        <location filename="ToDoList.cpp" line="338"/>
+        <location filename="ToDoList.cpp" line="367"/>
         <source>All</source>
         <translation>Всі завдання</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="108"/>
-        <location filename="ToDoList.cpp" line="125"/>
-        <location filename="ToDoList.cpp" line="389"/>
+        <location filename="ToDoList.cpp" line="97"/>
+        <location filename="ToDoList.cpp" line="339"/>
+        <location filename="ToDoList.cpp" line="370"/>
         <source>Planned</source>
         <translation>Заплановані завдання</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="109"/>
-        <location filename="ToDoList.cpp" line="126"/>
-        <location filename="ToDoList.cpp" line="390"/>
+        <location filename="ToDoList.cpp" line="98"/>
+        <location filename="ToDoList.cpp" line="340"/>
+        <location filename="ToDoList.cpp" line="373"/>
         <source>Completed</source>
         <translation>Виконані завдання</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="110"/>
-        <location filename="ToDoList.cpp" line="127"/>
-        <location filename="ToDoList.cpp" line="391"/>
+        <location filename="ToDoList.cpp" line="99"/>
+        <location filename="ToDoList.cpp" line="341"/>
+        <location filename="ToDoList.cpp" line="376"/>
         <source>Failed</source>
         <translation>Провалені завдання</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="111"/>
-        <location filename="ToDoList.cpp" line="136"/>
+        <location filename="ToDoList.cpp" line="108"/>
+        <location filename="ToDoList.cpp" line="342"/>
         <source>Settings</source>
         <translation>Налаштування</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="112"/>
-        <location filename="ToDoList.cpp" line="137"/>
+        <location filename="ToDoList.cpp" line="109"/>
+        <location filename="ToDoList.cpp" line="343"/>
         <source>About program</source>
         <translation>Про програму</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="113"/>
-        <location filename="ToDoList.cpp" line="140"/>
+        <location filename="ToDoList.cpp" line="112"/>
+        <location filename="ToDoList.cpp" line="344"/>
         <source>Language</source>
         <translation>Змінити мову</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="114"/>
-        <location filename="ToDoList.cpp" line="141"/>
+        <location filename="ToDoList.cpp" line="113"/>
+        <location filename="ToDoList.cpp" line="345"/>
         <source>English</source>
         <translation>Англійська</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="115"/>
-        <location filename="ToDoList.cpp" line="142"/>
+        <location filename="ToDoList.cpp" line="114"/>
+        <location filename="ToDoList.cpp" line="346"/>
         <source>Ukrainian</source>
         <translation>Українська</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="116"/>
-        <location filename="ToDoList.cpp" line="147"/>
+        <location filename="ToDoList.cpp" line="119"/>
+        <location filename="ToDoList.cpp" line="347"/>
         <source>Task</source>
         <translation>Завдання</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="117"/>
-        <location filename="ToDoList.cpp" line="148"/>
+        <location filename="ToDoList.cpp" line="120"/>
+        <location filename="ToDoList.cpp" line="348"/>
         <source>Mark as Completed</source>
         <translation>Позначити як Виконане</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="118"/>
-        <location filename="ToDoList.cpp" line="149"/>
+        <location filename="ToDoList.cpp" line="121"/>
+        <location filename="ToDoList.cpp" line="349"/>
         <source>Mark as Failed</source>
         <translation>Позначити як Провалене</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="419"/>
-        <location filename="ToDoList.cpp" line="445"/>
-        <location filename="ToDoList.cpp" line="458"/>
+        <location filename="ToDoList.cpp" line="219"/>
+        <location filename="ToDoList.cpp" line="245"/>
+        <location filename="ToDoList.cpp" line="258"/>
         <source>Error making a query</source>
         <translation>Помилка виконання запиту</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="445"/>
+        <location filename="ToDoList.cpp" line="245"/>
         <source>Updating status task error: %1</source>
         <translation>Помилка оновлення статусу завдання: %1</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="458"/>
+        <location filename="ToDoList.cpp" line="258"/>
         <source>Updating is my day error: %1</source>
         <translation>Помилка оновлення статусу Мій День: %1</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="469"/>
+        <location filename="ToDoList.cpp" line="515"/>
         <source>Choose the row to mark as completed</source>
         <translation>Виберіть завдання, щоб позначити як Виконане</translation>
     </message>
     <message>
-        <location filename="ToDoList.cpp" line="474"/>
+        <location filename="ToDoList.cpp" line="524"/>
         <source>Choose the row to mark as failed</source>
         <translation>Виберіть завдання, щоб позначити як Провалене</translation>
+    </message>
+    <message>
+        <location filename="ToDoList.cpp" line="562"/>
+        <source>About Program</source>
+        <translation>Про програму</translation>
+    </message>
+    <message>
+        <location filename="ToDoList.cpp" line="562"/>
+        <source>Simple ToDoList using QT and PostgreSQL</source>
+        <translation>Простий список завдань використовуючи QT і PostgreSQL</translation>
     </message>
 </context>
 <context>

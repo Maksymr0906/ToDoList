@@ -39,6 +39,10 @@ ToDoList::ToDoList(QWidget *parent)
     connect(editTaskButton, &QPushButton::released, this, &ToDoList::editTaskButtonReleased);
     connect(removeTaskButton, &QPushButton::pressed, this, &ToDoList::removeTaskButtonPressed);
     connect(removeTaskButton, &QPushButton::released, this, &ToDoList::removeTaskButtonReleased);
+    connect(completeTaskButton, &QPushButton::pressed, this, &ToDoList::completeTaskButtonPressed);
+    connect(completeTaskButton, &QPushButton::released, this, &ToDoList::completeTaskButtonReleased);
+    connect(failTaskButton, &QPushButton::pressed, this, &ToDoList::failTaskButtonPressed);
+    connect(failTaskButton, &QPushButton::released, this, &ToDoList::failTaskButtonReleased);
     connect(actionMyDay, &QAction::triggered, this, &ToDoList::actionMyDayTriggered);
     connect(actionImportant, &QAction::triggered, this, &ToDoList::actionImportantTriggered);
     connect(actionAll, &QAction::triggered, this, &ToDoList::actionAllTriggered);
@@ -49,10 +53,6 @@ ToDoList::ToDoList(QWidget *parent)
     connect(tasksTableFrame->getView()->selectionModel(), &QItemSelectionModel::selectionChanged, this, &ToDoList::updateButtonsState);
     connect(actionMarkAsCompleted, &QAction::triggered, this, &ToDoList::completeTaskButtonPressed);
     connect(actionMarkAsFailed, &QAction::triggered, this, &ToDoList::failTaskButtonPressed);
-    connect(completeTaskButton, &QPushButton::pressed, this, &ToDoList::completeTaskButtonPressed);
-    connect(completeTaskButton, &QPushButton::released, this, &ToDoList::completeTaskButtonReleased);
-    connect(failTaskButton, &QPushButton::pressed, this, &ToDoList::failTaskButtonPressed);
-    connect(failTaskButton, &QPushButton::released, this, &ToDoList::failTaskButtonReleased);
     connect(actionEnglish, &QAction::triggered, this, &ToDoList::actionEnglishTriggered);
     connect(actionUkrainian, &QAction::triggered, this, &ToDoList::actionUkrainianTriggered);
 }
@@ -81,43 +81,13 @@ ToDoList::~ToDoList() {
     delete editTaskButton;
     delete removeTaskButton;
     delete addNewTaskFrame;
+    delete completeTaskButton;
+    delete failTaskButton;
     delete titleImage;
     delete titleText;
     delete titleFrame;
     delete tasksTableFrame;
     delete centralWidget;
-}
-
-void ToDoList::actionEnglishTriggered() {
-    translator.load("lang_en.qm");
-    qApp->installTranslator(&translator);
-    retranslateUI();
-}
-
-void ToDoList::actionUkrainianTriggered() {
-    translator.load("lang_uk_UA.qm");
-    qApp->installTranslator(&translator);
-    retranslateUI();
-}
-
-void ToDoList::retranslateUI() {
-    tasksTableFrame->setTitles();
-    actionMyDay->setText(tr("My Day"));
-    actionImportant->setText(tr("Important"));
-    actionAll->setText(tr("All"));
-    actionPlanned->setText(tr("Planned"));
-    actionCompleted->setText(tr("Completed"));
-    actionFailed->setText(tr("Failed"));
-    menuSettings->setTitle(tr("Settings"));
-    actionAboutProgram->setText(tr("About program"));
-    menuLanguage->setTitle(tr("Language"));
-    actionEnglish->setText(tr("English"));
-    actionUkrainian->setText(tr("Ukrainian"));
-    menuTask->setTitle(tr("Task"));
-    actionMarkAsCompleted->setText(tr("Mark as Completed"));
-    actionMarkAsFailed->setText(tr("Mark as Failed"));
-    refreshTitle(TASK_TYPE::MY_DAY);
-    tasksTableFrame->setFilter("true", 7);
 }
 
 void ToDoList::createToolBar() {
@@ -167,7 +137,7 @@ void ToDoList::createTitleFrame() {
 
     titleText = new QLabel(tr("My Day"), this);
     titleText->setStyleSheet("font-family: Segoe UI; font-size: 18px; font-weight: bold;");
-    
+
     completeTaskButton = createButton("Assets/done_icon.png");
     completeTaskButton->setEnabled(false);
     completeTaskButton->setVisible(false);
@@ -241,184 +211,6 @@ QPushButton* ToDoList::createButton(const QString& iconPath) {
     return button;
 }
 
-void ToDoList::addTaskButtonPressed() {
-    addTaskButton->setStyleSheet("background-color: lightblue; border: none;");
-    std::unique_ptr<TaskDialog> newTaskDialog = std::make_unique<TaskDialog>(emailValidator, dateValidator);
-    newTaskDialog->setFixedSize(462, 434);
-    if(newTaskDialog->exec() == QDialog::Accepted) {
-        QSqlQuery insertQuery;
-        QString insertQueryString = "INSERT INTO todolist (task_name, deadline, responsible, email, status, is_important, is_my_day) "
-            "VALUES (:task_name, :deadline, :responsible, :email, :status, :is_important, :is_my_day)";
-
-        insertQuery.prepare(insertQueryString);
-        insertQuery.bindValue(":task_name", newTaskDialog->getTaskName().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getTaskName());
-        insertQuery.bindValue(":deadline", newTaskDialog->getDeadline().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getDeadline());
-        insertQuery.bindValue(":responsible", newTaskDialog->getResponsible().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getResponsible());
-        insertQuery.bindValue(":email", newTaskDialog->getEmail().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getEmail());
-        insertQuery.bindValue(":status", static_cast<int>(STATUS::IN_PROCESS));
-        insertQuery.bindValue(":is_important", newTaskDialog->getIsImportant());
-        insertQuery.bindValue(":is_my_day", newTaskDialog->getIsMyDay());
-
-        if (!insertQuery.exec()) {
-            QMessageBox::critical(this, tr("Error"), tr("Adding task error: %1").arg(insertQuery.lastError().text()));
-            return;
-        }
-
-        refreshTasks();
-    }
-}
-
-void ToDoList::editTaskButtonPressed() {
-    editTaskButton->setStyleSheet("background-color: lightblue; border: none;");
-    if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
-        QMessageBox::information(this, tr("Error"), tr("Choose the row at first"));
-        return;
-    }
-
-    Task task = getSelectedTask();
-
-    std::unique_ptr<TaskDialog> taskDialog = std::make_unique<TaskDialog>(emailValidator, dateValidator, this);
-    taskDialog->setFixedSize(462, 434);
-    taskDialog->setTaskName(task.taskName);
-    taskDialog->setDeadline(task.deadline);
-    taskDialog->setResponsible(task.responsible);
-    taskDialog->setEmail(task.email);
-    taskDialog->setIsImportant(task.isImportant);
-    taskDialog->setIsMyDay(task.isMyDay);
-
-    if (taskDialog->exec() == QDialog::Accepted) {
-        QSqlQuery updateQuery;
-        QString updateQueryString = "UPDATE todolist "
-            "SET task_name = :new_task_name, deadline = :new_deadline, responsible = :new_responsible, email = :new_email, status = :new_status, is_important = :new_important, is_my_day = :new_my_day "
-            "WHERE id = :id";
-
-        updateQuery.prepare(updateQueryString);
-        updateQuery.bindValue(":new_task_name", taskDialog->getTaskName().isEmpty() ? QVariant(QVariant::String) : taskDialog->getTaskName());
-        updateQuery.bindValue(":new_deadline", taskDialog->getDeadline().isEmpty() ? QVariant(QVariant::String) : taskDialog->getDeadline());
-        updateQuery.bindValue(":new_responsible", taskDialog->getResponsible().isEmpty() ? QVariant(QVariant::String) : taskDialog->getResponsible());
-        updateQuery.bindValue(":new_email", taskDialog->getEmail().isEmpty()? QVariant(QVariant::String) : taskDialog->getEmail());
-        updateQuery.bindValue(":new_status", static_cast<int>(task.status));
-        updateQuery.bindValue(":new_important", taskDialog->getIsImportant());
-        updateQuery.bindValue(":new_my_day", taskDialog->getIsMyDay());
-        updateQuery.bindValue(":id", task.id);
-        
-        if (!updateQuery.exec()) {
-            QMessageBox::critical(this, tr("Error"), tr("Updating task error: %1").arg(updateQuery.lastError().text()));
-            return;
-        }
-
-        refreshTasks();
-    }
-}
-
-void ToDoList::removeTaskButtonPressed() {
-    removeTaskButton->setStyleSheet("background-color: lightblue; border: none;");
-    if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
-        QMessageBox::information(this, tr("Error"), tr("Choose the row at first"));
-        return;
-    }
-
-    Task task = getSelectedTask();
-
-    QSqlQuery deleteQuery;
-    QString deleteQueryString = "DELETE FROM todolist WHERE id = :id";
-    deleteQuery.prepare(deleteQueryString);
-    deleteQuery.bindValue(":id", task.id);
-
-    bool deleteResult = deleteQuery.exec();
-
-    if (!deleteResult) {
-        QMessageBox::critical(this, tr("Error"), tr("Deleting task error: %1").arg(deleteQuery.lastError().text()));
-        return;
-    }
-
-    refreshTasks();
-}
-
-void ToDoList::updateButtonsState() {
-    if (tasksTableFrame->getView()->selectionModel()->hasSelection()) {
-        enableButtons();
-    }
-    else {
-        disableButtons();
-    }
-}
-
-void ToDoList::actionMyDayTriggered() {
-    refreshTitle(TASK_TYPE::MY_DAY);
-    tasksTableFrame->setFilter("true", 7);
-}
-
-void ToDoList::actionImportantTriggered() {
-    refreshTitle(TASK_TYPE::IMPORTANT);
-    tasksTableFrame->setFilter("true", 6);
-}
-
-void ToDoList::actionAllTriggered() {
-    refreshTitle(TASK_TYPE::ALL);
-    tasksTableFrame->resetFilter();
-}
-
-void ToDoList::actionPlannedTriggered() {
-    refreshTitle(TASK_TYPE::PLANNED);
-    tasksTableFrame->setFilter("20", 2);
-}
-
-void ToDoList::actionCompletedTriggered() {
-    refreshTitle(TASK_TYPE::COMPLETED);
-    tasksTableFrame->setFilter("1", 5);
-}
-
-void ToDoList::actionFailedTriggered() {
-    refreshTitle(TASK_TYPE::FAILED);
-    tasksTableFrame->setFilter("2", 5);
-}
-
-void ToDoList::actionAboutProgramTriggered() {
-    QMessageBox::information(this, "About Program", "Action About Program triggered");
-}
-
-void ToDoList::refreshTitle(TASK_TYPE taskType) {
-    refreshTitleText(taskType);
-    refreshTitleIcon(taskType);
-}
-
-void ToDoList::refreshTitleText(TASK_TYPE taskType) {
-    if (taskType == TASK_TYPE::MY_DAY) {
-        titleText->setText(tr("My Day"));
-    }
-    else if (taskType == TASK_TYPE::IMPORTANT) {
-        titleText->setText(tr("Important"));
-    }
-    else if (taskType == TASK_TYPE::ALL) {
-        titleText->setText(tr("All"));
-    }
-    else if (taskType == TASK_TYPE::PLANNED) {
-        titleText->setText(tr("Planned"));
-    }
-    else if (taskType == TASK_TYPE::COMPLETED) {
-        titleText->setText(tr("Completed"));
-    }
-    else {
-        titleText->setText(tr("Failed"));
-    }
-}
-
-void ToDoList::refreshTitleIcon(TASK_TYPE taskType) {
-    static const QMap<TASK_TYPE, QString> taskTypeToIcon = {
-        {TASK_TYPE::MY_DAY, "Assets/myday_icon.png"},
-        {TASK_TYPE::IMPORTANT, "Assets/important_icon.png"},
-        {TASK_TYPE::ALL, "Assets/all_icon.png"},
-        {TASK_TYPE::PLANNED, "Assets/planned_icon.png"},
-        {TASK_TYPE::COMPLETED, "Assets/done_icon.png"},
-        {TASK_TYPE::FAILED, "Assets/failed_icon.png"}
-    };
-
-    if(taskTypeToIcon.contains(taskType)) {
-        titleImage->setPixmap(taskTypeToIcon.value(taskType));
-    }
-}
-
 void ToDoList::refreshTasks() {
     disableButtons();
 
@@ -472,14 +264,26 @@ void ToDoList::refreshTasks() {
     mainModel->select();
 }
 
-void ToDoList::completeTaskButtonPressed() {
-    completeTaskButton->setStyleSheet("background-color: lightblue; border: none;");
-    markTask(STATUS::COMPLETED, tr("Choose the row to mark as completed"));
+void ToDoList::enableButtons() {
+    removeTaskButton->setEnabled(true);
+    editTaskButton->setEnabled(true);
+    actionMarkAsCompleted->setEnabled(true);
+    actionMarkAsFailed->setEnabled(true);
+    completeTaskButton->setEnabled(true);
+    completeTaskButton->setVisible(true);
+    failTaskButton->setEnabled(true);
+    failTaskButton->setVisible(true);
 }
 
-void ToDoList::failTaskButtonPressed() {
-    failTaskButton->setStyleSheet("background-color: lightblue; border: none;");
-    markTask(STATUS::FAILED, tr("Choose the row to mark as failed"));
+void ToDoList::disableButtons() {
+    editTaskButton->setEnabled(false);
+    removeTaskButton->setEnabled(false);
+    actionMarkAsCompleted->setEnabled(false);
+    actionMarkAsFailed->setEnabled(false);
+    completeTaskButton->setEnabled(false);
+    completeTaskButton->setVisible(false);
+    failTaskButton->setEnabled(false);
+    failTaskButton->setVisible(false);
 }
 
 void ToDoList::markTask(STATUS newStatus, const QString& errorMessage) {
@@ -496,10 +300,12 @@ void ToDoList::markTask(STATUS newStatus, const QString& errorMessage) {
         "WHERE id = :id";
 
     updateQuery.prepare(updateQueryString);
-    if (task.status != newStatus)
+    if (task.status != newStatus) {
         updateQuery.bindValue(":new_status", static_cast<int>(newStatus));
-    else
+    }
+    else {
         updateQuery.bindValue(":new_status", static_cast<int>(STATUS::IN_PROCESS));
+    }
     updateQuery.bindValue(":id", task.id);
 
     if (!updateQuery.exec()) {
@@ -527,44 +333,236 @@ Task ToDoList::getSelectedTask() {
     return task;
 }
 
-void ToDoList::completeTaskButtonReleased() {
-    completeTaskButton->setStyleSheet("background-color: transparent; border: none;");
+void ToDoList::retranslateUI() {
+    tasksTableFrame->setTitles();
+    actionMyDay->setText(tr("My Day"));
+    actionImportant->setText(tr("Important"));
+    actionAll->setText(tr("All"));
+    actionPlanned->setText(tr("Planned"));
+    actionCompleted->setText(tr("Completed"));
+    actionFailed->setText(tr("Failed"));
+    menuSettings->setTitle(tr("Settings"));
+    actionAboutProgram->setText(tr("About program"));
+    menuLanguage->setTitle(tr("Language"));
+    actionEnglish->setText(tr("English"));
+    actionUkrainian->setText(tr("Ukrainian"));
+    menuTask->setTitle(tr("Task"));
+    actionMarkAsCompleted->setText(tr("Mark as Completed"));
+    actionMarkAsFailed->setText(tr("Mark as Failed"));
+    refreshTitle(TASK_TYPE::MY_DAY);
+    tasksTableFrame->setFilter("true", 7);
 }
 
-void ToDoList::failTaskButtonReleased() {
-    failTaskButton->setStyleSheet("background-color: transparent; border: none;");
+void ToDoList::refreshTitle(TASK_TYPE taskType) {
+    refreshTitleText(taskType);
+    refreshTitleIcon(taskType);
+}
+
+void ToDoList::refreshTitleText(TASK_TYPE taskType) {
+    static const QMap<TASK_TYPE, QString> titleMappings = {
+        {TASK_TYPE::MY_DAY, "My Day"},
+        {TASK_TYPE::IMPORTANT, "Important"},
+        {TASK_TYPE::ALL, "All"},
+        {TASK_TYPE::PLANNED, "Planned"},
+        {TASK_TYPE::COMPLETED, "Completed"},
+        {TASK_TYPE::FAILED, "Failed"}
+    };
+
+    if (titleMappings.contains(taskType)) {
+        titleText->setText(tr(titleMappings.value(taskType).toUtf8().constData()));
+    }
+}
+
+void ToDoList::refreshTitleIcon(TASK_TYPE taskType) {
+    static const QMap<TASK_TYPE, QString> taskTypeToIcon = {
+        {TASK_TYPE::MY_DAY, "Assets/myday_icon.png"},
+        {TASK_TYPE::IMPORTANT, "Assets/important_icon.png"},
+        {TASK_TYPE::ALL, "Assets/all_icon.png"},
+        {TASK_TYPE::PLANNED, "Assets/planned_icon.png"},
+        {TASK_TYPE::COMPLETED, "Assets/done_icon.png"},
+        {TASK_TYPE::FAILED, "Assets/failed_icon.png"}
+    };
+
+    if (taskTypeToIcon.contains(taskType)) {
+        titleImage->setPixmap(taskTypeToIcon.value(taskType));
+    }
+}
+
+void ToDoList::actionEnglishTriggered() {
+    translator.load("lang_en.qm");
+    qApp->installTranslator(&translator);
+    retranslateUI();
+}
+
+void ToDoList::actionUkrainianTriggered() {
+    translator.load("lang_uk_UA.qm");
+    qApp->installTranslator(&translator);
+    retranslateUI();
+}
+
+void ToDoList::addTaskButtonPressed() {
+    addTaskButton->setStyleSheet("background-color: lightblue; border: none;");
+    std::unique_ptr<TaskDialog> newTaskDialog = std::make_unique<TaskDialog>(emailValidator, dateValidator);
+    newTaskDialog->setFixedSize(462, 434);
+    if(newTaskDialog->exec() == QDialog::Accepted) {
+        QSqlQuery insertQuery;
+        QString insertQueryString = "INSERT INTO todolist (task_name, deadline, responsible, email, status, is_important, is_my_day) "
+            "VALUES (:task_name, :deadline, :responsible, :email, :status, :is_important, :is_my_day)";
+
+        insertQuery.prepare(insertQueryString);
+        insertQuery.bindValue(":task_name", newTaskDialog->getTaskName().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getTaskName());
+        insertQuery.bindValue(":deadline", newTaskDialog->getDeadline().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getDeadline());
+        insertQuery.bindValue(":responsible", newTaskDialog->getResponsible().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getResponsible());
+        insertQuery.bindValue(":email", newTaskDialog->getEmail().isEmpty() ? QVariant(QVariant::String) : newTaskDialog->getEmail());
+        insertQuery.bindValue(":status", static_cast<int>(STATUS::IN_PROCESS));
+        insertQuery.bindValue(":is_important", newTaskDialog->getIsImportant());
+        insertQuery.bindValue(":is_my_day", newTaskDialog->getIsMyDay());
+
+        if (!insertQuery.exec()) {
+            QMessageBox::critical(this, tr("Error"), tr("Adding task error: %1").arg(insertQuery.lastError().text()));
+            return;
+        }
+
+        refreshTasks();
+    }
 }
 
 void ToDoList::addTaskButtonReleased() {
     addTaskButton->setStyleSheet("background-color: transparent; border: none;");
 }
 
+void ToDoList::editTaskButtonPressed() {
+    editTaskButton->setStyleSheet("background-color: lightblue; border: none;");
+    if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
+        QMessageBox::information(this, tr("Error"), tr("Choose the row at first"));
+        return;
+    }
+
+    Task task = getSelectedTask();
+
+    std::unique_ptr<TaskDialog> taskDialog = std::make_unique<TaskDialog>(emailValidator, dateValidator, this);
+    taskDialog->setFixedSize(462, 434);
+    taskDialog->setTaskName(task.taskName);
+    taskDialog->setDeadline(task.deadline);
+    taskDialog->setResponsible(task.responsible);
+    taskDialog->setEmail(task.email);
+    taskDialog->setIsImportant(task.isImportant);
+    taskDialog->setIsMyDay(task.isMyDay);
+
+    if (taskDialog->exec() == QDialog::Accepted) {
+        QSqlQuery updateQuery;
+        QString updateQueryString = "UPDATE todolist "
+            "SET task_name = :new_task_name, deadline = :new_deadline, responsible = :new_responsible, email = :new_email, status = :new_status, is_important = :new_important, is_my_day = :new_my_day "
+            "WHERE id = :id";
+
+        updateQuery.prepare(updateQueryString);
+        updateQuery.bindValue(":new_task_name", taskDialog->getTaskName().isEmpty() ? QVariant(QVariant::String) : taskDialog->getTaskName());
+        updateQuery.bindValue(":new_deadline", taskDialog->getDeadline().isEmpty() ? QVariant(QVariant::String) : taskDialog->getDeadline());
+        updateQuery.bindValue(":new_responsible", taskDialog->getResponsible().isEmpty() ? QVariant(QVariant::String) : taskDialog->getResponsible());
+        updateQuery.bindValue(":new_email", taskDialog->getEmail().isEmpty()? QVariant(QVariant::String) : taskDialog->getEmail());
+        updateQuery.bindValue(":new_status", static_cast<int>(task.status));
+        updateQuery.bindValue(":new_important", taskDialog->getIsImportant());
+        updateQuery.bindValue(":new_my_day", taskDialog->getIsMyDay());
+        updateQuery.bindValue(":id", task.id);
+        
+        if (!updateQuery.exec()) {
+            QMessageBox::critical(this, tr("Error"), tr("Updating task error: %1").arg(updateQuery.lastError().text()));
+            return;
+        }
+
+        refreshTasks();
+    }
+}
+
 void ToDoList::editTaskButtonReleased() {
     editTaskButton->setStyleSheet("background-color: transparent; border: none;");
+}
+
+void ToDoList::removeTaskButtonPressed() {
+    removeTaskButton->setStyleSheet("background-color: lightblue; border: none;");
+    if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
+        QMessageBox::information(this, tr("Error"), tr("Choose the row at first"));
+        return;
+    }
+
+    Task task = getSelectedTask();
+
+    QSqlQuery deleteQuery;
+    QString deleteQueryString = "DELETE FROM todolist WHERE id = :id";
+    deleteQuery.prepare(deleteQueryString);
+    deleteQuery.bindValue(":id", task.id);
+
+    bool deleteResult = deleteQuery.exec();
+
+    if (!deleteResult) {
+        QMessageBox::critical(this, tr("Error"), tr("Deleting task error: %1").arg(deleteQuery.lastError().text()));
+        return;
+    }
+
+    refreshTasks();
 }
 
 void ToDoList::removeTaskButtonReleased() {
     removeTaskButton->setStyleSheet("background-color: transparent; border: none;");
 }
 
-void ToDoList::enableButtons() {
-    removeTaskButton->setEnabled(true);
-    editTaskButton->setEnabled(true);
-    actionMarkAsCompleted->setEnabled(true);
-    actionMarkAsFailed->setEnabled(true);
-    completeTaskButton->setEnabled(true);
-    completeTaskButton->setVisible(true);
-    failTaskButton->setEnabled(true);
-    failTaskButton->setVisible(true);
+void ToDoList::completeTaskButtonPressed() {
+    completeTaskButton->setStyleSheet("background-color: lightblue; border: none;");
+    markTask(STATUS::COMPLETED, tr("Choose the row to mark as completed"));
 }
 
-void ToDoList::disableButtons() {
-    editTaskButton->setEnabled(false);
-    removeTaskButton->setEnabled(false);
-    actionMarkAsCompleted->setEnabled(false);
-    actionMarkAsFailed->setEnabled(false);
-    completeTaskButton->setEnabled(false);
-    completeTaskButton->setVisible(false);
-    failTaskButton->setEnabled(false);
-    failTaskButton->setVisible(false);
+void ToDoList::completeTaskButtonReleased() {
+    completeTaskButton->setStyleSheet("background-color: transparent; border: none;");
+}
+
+void ToDoList::failTaskButtonPressed() {
+    failTaskButton->setStyleSheet("background-color: lightblue; border: none;");
+    markTask(STATUS::FAILED, tr("Choose the row to mark as failed"));
+}
+
+void ToDoList::failTaskButtonReleased() {
+    failTaskButton->setStyleSheet("background-color: transparent; border: none;");
+}
+
+void ToDoList::actionMyDayTriggered() {
+    refreshTitle(TASK_TYPE::MY_DAY);
+    tasksTableFrame->setFilter("true", 7);
+}
+
+void ToDoList::actionImportantTriggered() {
+    refreshTitle(TASK_TYPE::IMPORTANT);
+    tasksTableFrame->setFilter("true", 6);
+}
+
+void ToDoList::actionAllTriggered() {
+    refreshTitle(TASK_TYPE::ALL);
+    tasksTableFrame->resetFilter();
+}
+
+void ToDoList::actionPlannedTriggered() {
+    refreshTitle(TASK_TYPE::PLANNED);
+    tasksTableFrame->setFilter("20", 2);
+}
+
+void ToDoList::actionCompletedTriggered() {
+    refreshTitle(TASK_TYPE::COMPLETED);
+    tasksTableFrame->setFilter("1", 5);
+}
+
+void ToDoList::actionFailedTriggered() {
+    refreshTitle(TASK_TYPE::FAILED);
+    tasksTableFrame->setFilter("2", 5);
+}
+
+void ToDoList::actionAboutProgramTriggered() {
+    QMessageBox::information(this, tr("About Program"), tr("Simple ToDoList using QT and PostgreSQL"));
+}
+
+void ToDoList::updateButtonsState() {
+    if (tasksTableFrame->getView()->selectionModel()->hasSelection()) {
+        enableButtons();
+    }
+    else {
+        disableButtons();
+    }
 }

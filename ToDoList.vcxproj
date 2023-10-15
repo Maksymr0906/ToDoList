@@ -87,6 +87,7 @@
     <QtUic Include="TaskDialog.ui" />
     <QtUic Include="ToDoList.ui" />
     <QtMoc Include="ToDoList.hpp" />
+    <ClCompile Include="TaskDialog.cpp" />
     <ClCompile Include="TasksTableFrame.cpp" />
     <ClCompile Include="TasksTableView.cpp" />
     <ClCompile Include="ToDoList.cpp" />
