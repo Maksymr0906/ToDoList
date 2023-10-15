@@ -13,7 +13,7 @@ ToDoList::ToDoList(QWidget *parent)
     db.setPassword("12345");
 
     if(!db.open())
-        QMessageBox::critical(this, "Error", "Error opening database");
+        QMessageBox::critical(this, tr("Error"), tr("Error opening database"));
     
     mainModel = new QSqlTableModel(this);
     mainModel->setTable("todolist");
@@ -87,12 +87,12 @@ ToDoList::~ToDoList() {
 }
 
 void ToDoList::createToolBar() {
-    actionMyDay = createAction("My Day", "Assets/myday_icon.png");
-    actionImportant = createAction("Important", "Assets/important_icon.png");
-    actionAll = createAction("All", "Assets/all_icon.png");
-    actionPlanned = createAction("Planned", "Assets/planned_icon.png");
-    actionCompleted = createAction("Completed", "Assets/done_icon.png");
-    actionFailed = createAction("Failed", "Assets/failed_icon.png");
+    actionMyDay = createAction(tr("My Day"), "Assets/myday_icon.png");
+    actionImportant = createAction(tr("Important"), "Assets/important_icon.png");
+    actionAll = createAction(tr("All"), "Assets/all_icon.png");
+    actionPlanned = createAction(tr("Planned"), "Assets/planned_icon.png");
+    actionCompleted = createAction(tr("Completed"), "Assets/done_icon.png");
+    actionFailed = createAction(tr("Failed"), "Assets/failed_icon.png");
 
     toolBar = new QToolBar("Tasks", this);
     toolBar->addActions({ actionMyDay , actionImportant, actionAll, actionPlanned, actionCompleted, actionFailed });
@@ -101,20 +101,20 @@ void ToDoList::createToolBar() {
 void ToDoList::createMenuBar() {
     menuBar = new QMenuBar(this);
 
-    menuSettings = new QMenu("Settings", this);
-    actionAboutProgram = new QAction("About program", this);
+    menuSettings = new QMenu(tr("Settings"), this);
+    actionAboutProgram = new QAction(tr("About program"), this);
     menuSettings->addAction(actionAboutProgram);
 
-    menuLanguage = new QMenu("Language", this);
-    actionEnglish = new QAction("English", this);
-    actionUkrainian = new QAction("Ukrainian", this);
+    menuLanguage = new QMenu(tr("Language"), this);
+    actionEnglish = new QAction(tr("English"), this);
+    actionUkrainian = new QAction(tr("Ukrainian"), this);
     menuLanguage->addActions({ actionEnglish, actionUkrainian });
 
     menuSettings->addMenu(menuLanguage);
 
-    menuTask = new QMenu("Task", this);
-    actionMarkAsCompleted = createAction("Mark as Completed", "Assets/done_icon.png");
-    actionMarkAsFailed = createAction("Mark as Failed", "Assets/failed_icon.png");
+    menuTask = new QMenu(tr("Task"), this);
+    actionMarkAsCompleted = createAction(tr("Mark as Completed"), "Assets/done_icon.png");
+    actionMarkAsFailed = createAction(tr("Mark as Failed"), "Assets/failed_icon.png");
     actionMarkAsCompleted->setEnabled(false);
     actionMarkAsFailed->setEnabled(false);
     menuTask->addActions({ actionMarkAsCompleted, actionMarkAsFailed });
@@ -131,7 +131,7 @@ void ToDoList::createTitleFrame() {
     titleImage->setMaximumSize(QSize(40, 40));
     titleImage->setScaledContents(true);
 
-    titleText = new QLabel("My Day", this);
+    titleText = new QLabel(tr("My Day"), this);
     titleText->setStyleSheet("font-family: Segoe UI; font-size: 18px; font-weight: bold;");
     
     completeTaskButton = createButton("Assets/done_icon.png");
@@ -237,7 +237,7 @@ void ToDoList::addTaskButtonPressed() {
 void ToDoList::editTaskButtonPressed() {
     editTaskButton->setStyleSheet("background-color: lightblue; border: none;");
     if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
-        QMessageBox::information(this, "Error", "Choose the row at first");
+        QMessageBox::information(this, tr("Error"), tr("Choose the row at first"));
         return;
     }
 
@@ -280,7 +280,7 @@ void ToDoList::editTaskButtonPressed() {
 void ToDoList::removeTaskButtonPressed() {
     removeTaskButton->setStyleSheet("background-color: lightblue; border: none;");
     if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
-        QMessageBox::information(this, "Error", "Choose the row at first");
+        QMessageBox::information(this, tr("Error"), tr("Choose the row at first"));
         return;
     }
 
@@ -351,12 +351,12 @@ void ToDoList::refreshTitle(TASK_TYPE taskType) {
 
 void ToDoList::refreshTitleText(TASK_TYPE taskType) {
     static const QMap<TASK_TYPE, QString> taskTypeTotitleText = {
-        {TASK_TYPE::MY_DAY, "My Day"},
-        {TASK_TYPE::IMPORTANT, "Important"},
-        {TASK_TYPE::ALL, "All"},
-        {TASK_TYPE::PLANNED, "Planned"},
-        {TASK_TYPE::COMPLETED, "Completed"},
-        {TASK_TYPE::FAILED, "Failed"}
+        {TASK_TYPE::MY_DAY, tr("My Day")},
+        {TASK_TYPE::IMPORTANT, tr("Important")},
+        {TASK_TYPE::ALL, tr("All")},
+        {TASK_TYPE::PLANNED, tr("Planned")},
+        {TASK_TYPE::COMPLETED, tr("Completed")},
+        {TASK_TYPE::FAILED, tr("Failed")}
     };
 
     if(taskTypeTotitleText.contains(taskType)) {
@@ -384,7 +384,7 @@ void ToDoList::refreshTasks() {
 
     QSqlQuery selectQuery;
     if (!selectQuery.exec("SELECT * FROM todolist;")) {
-        QMessageBox::critical(this, "Error making a query", "Error making a query");
+        QMessageBox::critical(this, tr("Error making a query"), tr("Error making a query"));
         return;
     }
 
@@ -410,7 +410,7 @@ void ToDoList::refreshTasks() {
             updateStatusQuery.bindValue(":id", task.id);
 
             if (!updateStatusQuery.exec()) {
-                QMessageBox::critical(this, "Error making a query", tr("Updating status task error: %1").arg(updateStatusQuery.lastError().text()));
+                QMessageBox::critical(this, tr("Error making a query"), tr("Updating status task error: %1").arg(updateStatusQuery.lastError().text()));
                 return;
             }
         }
@@ -423,7 +423,7 @@ void ToDoList::refreshTasks() {
             updateMyDayQuery.bindValue(":id", task.id);
 
             if (!updateMyDayQuery.exec()) {
-                QMessageBox::critical(this, "Error making a query", tr("Updating is my day error: %1").arg(updateMyDayQuery.lastError().text()));
+                QMessageBox::critical(this, tr("Error making a query"), tr("Updating is my day error: %1").arg(updateMyDayQuery.lastError().text()));
                 return;
             }
         }
@@ -434,17 +434,17 @@ void ToDoList::refreshTasks() {
 
 void ToDoList::completeTaskButtonPressed() {
     completeTaskButton->setStyleSheet("background-color: lightblue; border: none;");
-    markTask(STATUS::COMPLETED, "Choose the row to mark as completed");
+    markTask(STATUS::COMPLETED, tr("Choose the row to mark as completed"));
 }
 
 void ToDoList::failTaskButtonPressed() {
     failTaskButton->setStyleSheet("background-color: lightblue; border: none;");
-    markTask(STATUS::FAILED, "Choose the row to mark as failed");
+    markTask(STATUS::FAILED, tr("Choose the row to mark as failed"));
 }
 
 void ToDoList::markTask(STATUS newStatus, const QString& errorMessage) {
     if (!(tasksTableFrame->getSelectionModel() && tasksTableFrame->getSelectionModel()->selectedRows().count() > 0)) {
-        QMessageBox::information(this, "Error", errorMessage);
+        QMessageBox::information(this, tr("Error"), errorMessage);
         return;
     }
 

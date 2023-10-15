@@ -10,5 +10,7 @@
         <file>Assets/refresh.png</file>
         <file>Assets/remove_icon.png</file>
         <file>Assets/add_icon.png</file>
+        <file>lang_en.qm</file>
+        <file>lang_uk_UA.qm</file>
     </qresource>
 </RCC>
